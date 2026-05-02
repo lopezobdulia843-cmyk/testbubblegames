@@ -226,3 +226,22 @@ input:checked + .slider { background-color: var(--pink-go); }
 input:checked + .slider:before { transform: translateX(26px); }
 
 @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+/* FIX: HIDE HUB AND PANEL ON LOAD */
+#hub-interface, 
+#user-status, 
+.slide-panel {
+    display: none !important;
+}
+
+/* FIX: ONLY SHOW PANEL WHEN 'OPEN' CLASS IS ADDED */
+.slide-panel.open {
+    display: flex !important;
+    bottom: 0 !important;
+}
+
+/* FIX: ENSURE GATEWAY IS FRONT AND CENTER */
+#gateway-interface {
+    display: flex;
+    z-index: 1000;
+}
