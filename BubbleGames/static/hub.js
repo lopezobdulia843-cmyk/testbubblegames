@@ -1,131 +1,120 @@
-// --- BUBBLE GAMES HYBRID HUB ENGINE ---
+/**
+ * BUBBLE GAMES HUB ENGINE
+ * Handles: Tabs, Slide Panel, Search, and Theme Memory
+ */
 
-// 1. DATA: The Global Library
-const gameTemplates = [
-    { id: 't1', title: 'Platformer Pro', icon: '🏃‍♂️', category: 'Global' },
-    { id: 't2', title: 'Bubble Pop', icon: '🫧', category: 'Global' },
-    { id: 't3', title: 'Speed Racer', icon: '🏎️', category: 'Global' },
-    { id: 't4', title: 'Physics Sandbox', icon: '📦', category: 'Global' },
-    { id: 't5', title: 'Obby Master', icon: '🧗', category: 'Global' },
-    { id: 't6', title: 'Clicker Tycoon', icon: '💰', category: 'Global' }
+// 1. DATA - This is your "Database" for the session
+const GAMES_DATA = [
+    { id: 1, name: 'Climb It!', icon: '🏔️', owned: false, rating: 4.8, players: '1.2k' },
+    { id: 2, name: 'Kingdom Sim', icon: '🏰', owned: false, rating: 4.5, players: '800' },
+    { id: 3, name: 'Haunted Hall', icon: '👻', owned: false, rating: 4.9, players: '2.5k' },
+    { id: 4, name: 'Bubble Craft', icon: '🫧', owned: true, rating: 5.0, players: 'Admin' },
+    { id: 5, name: 'Arti Abe AI', icon: '🤖', owned: true, rating: 5.0, players: 'Admin' }
 ];
 
-// 2. UI NAVIGATION: The "Juicy" Controller
-function switchTab(tabName) {
+// 2. TAB SYSTEM
+window.switchTab = function(tabName) {
+    // Close the panel if it's open during a tab switch
     closePanel();
-    
-    // UI Logic: Hide all views
-    ['view-home', 'view-create', 'view-settings'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.style.display = 'none';
+
+    // Hide all view sections
+    const views = ['view-home', 'view-create', 'view-settings'];
+    views.forEach(viewId => {
+        const element = document.getElementById(viewId);
+        if (element) element.style.display = 'none';
     });
 
-    // UI Logic: Deactivate all icons
-    ['nav-home', 'nav-create', 'nav-settings'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.classList.remove('active');
+    // Remove 'active' status from all nav icons
+    const navs = ['nav-home', 'nav-create', 'nav-settings'];
+    navs.forEach(navId => {
+        const navItem = document.getElementById(navId);
+        if (navItem) navItem.classList.remove('active');
     });
 
-    // UI Logic: Activate current tab
+    // Show the one we want
     const targetView = document.getElementById('view-' + tabName);
     const targetNav = document.getElementById('nav-' + tabName);
-    
-    if (targetView) targetView.style.display = 'flex';
+
+    if (targetView) targetView.style.display = 'block';
     if (targetNav) targetNav.classList.add('active');
+};
 
-    // ENGINE LOGIC: Refresh games based on the tab
-    renderGames();
-}
-
-// 3. THE RENDER ENGINE: Creating the Tiles
-function renderGames(filter = '') {
-    const gameList = document.getElementById('game-list');
-    if (!gameList) return; 
-
-    gameList.innerHTML = ''; 
-
-    // Filter logic: Decide if we show Global or User games
-    let gamesToShow = [];
-    const activeNav = document.querySelector('.side-icon.active');
-    
-    if (activeNav && activeNav.id === 'nav-home') {
-        gamesToShow = gameTemplates;
-    } else if (activeNav && activeNav.id === 'nav-create') {
-        gamesToShow = [{ id: 'user1', title: 'Bubble Craft', icon: '🫧', category: 'Mine' }];
-    }
-
-    const filtered = gamesToShow.filter(g => 
-        g.title.toLowerCase().includes(filter.toLowerCase())
-    );
-
-    filtered.forEach(game => {
-        const card = document.createElement('div');
-        card.className = 'market-card'; // Using your CSS class name
-        card.innerHTML = `
-            <span class="market-icon">${game.icon}</span>
-            <h3>${game.title}</h3>
-        `;
-        
-        // Link the click to the UI Panel
-        card.onclick = () => openPanel(game.title, game.icon, (game.category === 'Mine'));
-        gameList.appendChild(card);
-    });
-}
-
-// 4. ACTION PANEL LOGIC: The Slide-up Menu
-function openPanel(name, icon, isOwned) {
-    document.getElementById('panelTitle').innerText = name;
-    document.getElementById('panelIcon').innerText = icon;
-    
+// 3. SLIDE PANEL LOGIC
+window.openPanel = function(name, icon, isOwned) {
+    const panel = document.getElementById('actionPanel');
+    const titleEl = document.getElementById('panelTitle');
+    const iconEl = document.getElementById('panelIcon');
     const ownedControls = document.getElementById('ownedControls');
     const visitorStats = document.getElementById('visitorStats');
-    const editNameInput = document.getElementById('editName');
+    const editInput = document.getElementById('editName');
 
+    // Set Content
+    titleEl.innerText = name;
+    iconEl.innerText = icon;
+
+    // Show/Hide Owner UI
     if (isOwned) {
-        if (ownedControls) ownedControls.style.display = 'block';
-        if (visitorStats) visitorStats.style.display = 'none';
-        if (editNameInput) editNameInput.value = name;
+        ownedControls.style.display = 'block';
+        visitorStats.style.display = 'none';
+        if (editInput) editInput.value = name;
     } else {
-        if (ownedControls) ownedControls.style.display = 'none';
-        if (visitorStats) visitorStats.style.display = 'block';
+        ownedControls.style.display = 'none';
+        visitorStats.style.display = 'block';
     }
 
-    document.getElementById('actionPanel').classList.add('open');
-}
+    // Slide it up!
+    panel.classList.add('open');
+};
 
-function closePanel() {
-    document.getElementById('actionPanel').classList.remove('open');
-}
+window.closePanel = function() {
+    const panel = document.getElementById('actionPanel');
+    if (panel) panel.classList.remove('open');
+};
 
-// 5. SETTINGS & SYSTEM
-function fakeLogout() {
-    if(confirm("Are you sure you want to log out of Bubble Games?")) {
-        alert("You have been logged out! (Returning to gateway...)");
+// 4. THEME & SETTINGS
+window.toggleDarkMode = function() {
+    const isDark = document.body.classList.toggle('dark-theme');
+    localStorage.setItem('bubbleTheme', isDark ? 'dark' : 'light');
+};
+
+// 5. SEARCH LOGIC (Simple Filter)
+document.addEventListener('DOMContentLoaded', () => {
+    const searchBar = document.querySelector('.hero-search');
+    
+    if (searchBar) {
+        searchBar.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.market-card');
+            
+            cards.forEach(card => {
+                const gameName = card.querySelector('h3').innerText.toLowerCase();
+                if (gameName.includes(term)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
     }
-}
 
-function toggleDarkMode() {
-    document.body.classList.toggle('dark-theme');
-    localStorage.setItem('bubbleTheme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
-}
-
-// 6. INITIALIZATION: Keeping it Alive
-window.onload = () => {
-    // Apply Theme
+    // Initialize Theme from Memory
     if (localStorage.getItem('bubbleTheme') === 'dark') {
         document.body.classList.add('dark-theme');
         const darkToggle = document.getElementById('darkToggle');
         if (darkToggle) darkToggle.checked = true;
     }
+});
 
-    // Connect Search Bar to Engine
-    const searchBar = document.querySelector('.hero-search');
-    if (searchBar) {
-        searchBar.addEventListener('input', (e) => {
-            renderGames(e.target.value);
-        });
+// 6. LOGOUT (Link this to your Gateway logic)
+window.handleLogout = function() {
+    if(confirm("Ready to hop out of the bubble?")) {
+        // Clear local session info if needed
+        // Then hide Hub and show Login
+        document.getElementById('hub-interface').style.display = 'none';
+        document.getElementById('user-status').style.display = 'none';
+        document.getElementById('gateway-interface').style.display = 'flex';
+        
+        // Reset to first tab for next login
+        switchTab('home');
     }
-
-    // Initial render
-    renderGames();
 };
