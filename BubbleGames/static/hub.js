@@ -39,7 +39,7 @@ window.switchTab = function(tabName) {
     if (targetNav) targetNav.classList.add('active');
 };
 
-// 3. SLIDE PANEL LOGIC
+// 3. SLIDE PANEL LOGIC (FIXED)
 window.openPanel = function(name, icon, isOwned) {
     const panel = document.getElementById('actionPanel');
     const titleEl = document.getElementById('panelTitle');
@@ -62,13 +62,22 @@ window.openPanel = function(name, icon, isOwned) {
         visitorStats.style.display = 'block';
     }
 
-    // Slide it up!
-    panel.classList.add('open');
+    // SLIDE LOGIC: Show it in the DOM, then animate after a tiny delay
+    panel.style.display = 'flex'; 
+    setTimeout(() => {
+        panel.classList.add('open'); 
+    }, 10);
 };
 
 window.closePanel = function() {
     const panel = document.getElementById('actionPanel');
-    if (panel) panel.classList.remove('open');
+    if (panel) {
+        panel.classList.remove('open');
+        // Wait for the slide-down animation (0.5s) to finish before hiding it from DOM
+        setTimeout(() => {
+            panel.style.display = 'none'; 
+        }, 500);
+    }
 };
 
 // 4. THEME & SETTINGS
@@ -77,7 +86,7 @@ window.toggleDarkMode = function() {
     localStorage.setItem('bubbleTheme', isDark ? 'dark' : 'light');
 };
 
-// 5. SEARCH LOGIC (Simple Filter)
+// 5. SEARCH LOGIC
 document.addEventListener('DOMContentLoaded', () => {
     const searchBar = document.querySelector('.hero-search');
     
@@ -105,16 +114,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// 6. LOGOUT (Link this to your Gateway logic)
+// 6. LOGOUT
 window.handleLogout = function() {
     if(confirm("Ready to hop out of the bubble?")) {
-        // Clear local session info if needed
-        // Then hide Hub and show Login
         document.getElementById('hub-interface').style.display = 'none';
         document.getElementById('user-status').style.display = 'none';
         document.getElementById('gateway-interface').style.display = 'flex';
-        
-        // Reset to first tab for next login
         switchTab('home');
     }
 };
