@@ -4,21 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bubble Games | World</title>
-    <!-- Use your local CSS file name here -->
+    <!-- Standardized to your style.css -->
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="light-theme">
+<body>
 
-    <!-- 1. THE FLOATING BRAND (ALWAYS VISIBLE) -->
+    <!-- 1. GLOBAL BRANDING & STATUS -->
     <div class="corner-brand">
         <span class="brand-bubble">🫧</span> 
         Bubble<span class="brand-pink">Games</span>
     </div>
 
-    <!-- 2. LOGIN / SIGNUP VIEW -->
-    <div id="gateway-section" class="gateway-layout">
+    <div id="user-status" class="user-status" style="display: none;">
+        <span id="display-username">Player</span>
+        <button class="logout-btn" onclick="handleLogout()">Logout ⏻</button>
+    </div>
+
+    <!-- 2. THE GATEWAY (LOGIN/SIGNUP) -->
+    <div id="gateway-interface" class="main-wrapper">
         <h2 class="page-welcome" id="page-title">Getting Started</h2>
-        
+
         <div class="bubble-card">
             <div class="brand">
                 <span class="bubble-icon">🫧</span>
@@ -33,7 +38,7 @@
                         <a href="#" class="forgot-link" id="forgot-pass">Forgot Password?</a>
                     </div>
                 </div>
-                <div id="loader" class="loader" style="display:none;"></div>
+                <div id="loader" class="loader"></div>
                 <button class="go-btn" id="main-button" onclick="handleAuth()">Let's Play!</button>
                 <div class="footer-links">
                     <p id="toggle-container">New here? <a href="#" class="signup-link" onclick="switchMode()">Sign Up!</a></p>
@@ -42,8 +47,9 @@
         </div>
     </div>
 
-    <!-- 3. THE HUB / DASHBOARD VIEW (HIDDEN UNTIL LOGIN) -->
-    <div id="hub-section" style="display: none; width: 100%; height: 100vh;">
+    <!-- 3. THE HUB (SIDEBAR & DASHBOARD) -->
+    <!-- Hidden by default until login -->
+    <div id="hub-interface" style="display: none;">
         
         <div class="sidebar">
             <div id="nav-home" class="side-icon active" onclick="switchTab('home')">🏠</div>
@@ -51,32 +57,53 @@
             <div id="nav-settings" class="side-icon" onclick="switchTab('settings')">⚙️</div>
         </div>
 
+        <!-- DISCOVER TAB -->
         <div id="view-home" class="main-content">
-            <div class="hub-header">
+            <div style="text-align: center;">
                 <h2>Discover Games</h2>
-                <div class="search-container">
-                    <span class="search-emoji">🔍</span>
-                    <input type="text" id="game-search" class="hero-search" placeholder="Search all bubble games...">
+                <div style="position: relative; display: inline-block; width: 100%; max-width: 800px;">
+                    <span style="position: absolute; left: 25px; top: 22px; font-size: 30px;">🔍</span>
+                    <input type="text" class="hero-search" placeholder="Search all bubble games...">
                 </div>
             </div>
-            <div id="global-game-grid" class="game-grid">
-                <!-- Market Cards here -->
+            <div class="game-grid">
+                <div class="market-card" onclick="openPanel('Climb It!', '🏔️', false)">
+                    <span class="market-icon">🏔️</span><h3>Climb It!</h3>
+                </div>
+                <div class="market-card" onclick="openPanel('Kingdom Sim', '🏰', false)">
+                    <span class="market-icon">🏰</span><h3>Kingdom Sim</h3>
+                </div>
+                <div class="market-card" onclick="openPanel('Haunted Hall', '👻', false)">
+                    <span class="market-icon">👻</span><h3>Haunted Hall</h3>
+                </div>
             </div>
         </div>
 
+        <!-- CREATE TAB -->
         <div id="view-create" class="main-content" style="display: none;">
-            <div class="creation-header">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
                 <h2>Your Creations</h2>
-                <button class="new-game-btn">+ New Game</button>
+                <div class="new-game-container">
+                    <button class="new-game-btn">+ New Game</button>
+                    <span class="tagline">Let your imagination flow! ✨</span>
+                </div>
             </div>
-            <div id="my-game-grid" class="game-grid">
-                <!-- Your Owned Cards here -->
+            <div class="game-grid">
+                <div class="market-card" onclick="openPanel('Bubble Craft', '🫧', true)">
+                    <span class="edit-badge">OWNED</span>
+                    <span class="market-icon">🫧</span><h3>Bubble Craft</h3>
+                </div>
+                <div class="market-card" onclick="openPanel('Arti Abe AI', '🤖', true)">
+                    <span class="edit-badge">OWNED</span>
+                    <span class="market-icon">🤖</span><h3>Arti Abe AI</h3>
+                </div>
             </div>
         </div>
 
+        <!-- SETTINGS TAB -->
         <div id="view-settings" class="main-content" style="display: none;">
             <h2>Settings</h2>
-            <div class="settings-card-wrapper bubble-card" style="max-width: 400px; padding: 20px;">
+            <div class="settings-card-wrapper">
                 <div class="toggle-row">
                     <span><strong>Dark Mode</strong></span>
                     <label class="switch">
@@ -84,12 +111,14 @@
                         <span class="slider"></span>
                     </label>
                 </div>
-                <button class="logout-btn" onclick="handleLogout()" style="margin-top: 20px;">Log Out 🚪</button>
+                <button class="logout-btn" onclick="handleLogout()">
+                    <span>🚪</span> Log Out
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- 4. SLIDE PANEL -->
+    <!-- 4. THE SLIDE PANEL -->
     <div id="actionPanel" class="slide-panel">
         <div class="panel-header-row">
             <div class="panel-identity">
@@ -99,42 +128,62 @@
             <button class="close-btn" onclick="closePanel()">Close</button>
         </div>
         <div id="panelContent">
-            <button class="play-btn">Play Now</button>
+            <div id="configSection">
+                <div id="ownedControls" style="display: none;">
+                    <label><strong>Rename Creation</strong></label><br>
+                    <input type="text" id="editName" class="edit-input">
+                </div>
+                <div id="visitorStats">
+                    <p>⭐ 4.8 Rating | 👤 1.2k Players</p>
+                </div>
+            </div>
+            <div class="play-container">
+                <button class="play-btn">Play Now</button>
+            </div>
         </div>
     </div>
 
-    <!-- UI Scripts -->
+    <!-- 5. SCRIPTS -->
     <script>
         window.mode = "login"; 
-        
+
         function switchMode() {
             const btn = document.getElementById('main-button');
+            const forgot = document.getElementById('forgot-pass');
+            const footer = document.getElementById('toggle-container');
             const pageTitle = document.getElementById('page-title');
+
             if (window.mode === "login") {
                 btn.innerText = "Create Account!";
+                forgot.style.display = "none";
+                footer.innerHTML = 'Already a member? <a href="#" class="signup-link" onclick="switchMode()">Log In!</a>';
                 pageTitle.innerText = "Join the Community";
                 window.mode = "signup";
             } else {
                 btn.innerText = "Let's Play!";
+                forgot.style.display = "inline";
+                footer.innerHTML = 'New here? <a href="#" class="signup-link" onclick="switchMode()">Sign Up!</a>';
                 pageTitle.innerText = "Getting Started";
                 window.mode = "login";
             }
         }
 
-        function switchTab(tabName) {
+        function switchTab(tab) {
             document.querySelectorAll('.main-content').forEach(v => v.style.display = 'none');
             document.querySelectorAll('.side-icon').forEach(i => i.classList.remove('active'));
-            document.getElementById('view-' + tabName).style.display = 'block';
-            document.getElementById('nav-' + tabName).classList.add('active');
+            document.getElementById('view-' + tab).style.display = 'block';
+            document.getElementById('nav-' + tab).classList.add('active');
         }
 
-        function unlockHub(username) {
-            document.getElementById('gateway-section').style.display = 'none';
-            document.getElementById('hub-section').style.display = 'flex';
+        // Call this from gateway.js on successful login!
+        function unlockHub() {
+            document.getElementById('gateway-interface').style.display = 'none';
+            document.getElementById('hub-interface').style.display = 'flex';
+            document.getElementById('user-status').style.display = 'flex';
         }
     </script>
 
-    <!-- Logic Scripts (Assuming root folder) -->
+    <!-- Paths set to root directory for compatibility -->
     <script type="module" src="gateway.js"></script>
     <script type="module" src="hub.js"></script>
     <script src="bubbles.js"></script>
