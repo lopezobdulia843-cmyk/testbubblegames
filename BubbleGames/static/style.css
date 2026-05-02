@@ -1,0 +1,186 @@
+/* =========================================
+   1. CORE VARIABLES (THE JUICY SYSTEM)
+   ========================================= */
+:root {
+    --bg-color: #f0f4ff;
+    --card-bg: white;
+    --sidebar-bg: white;
+    --text-main: #4f46e5;
+    --text-sub: #333;
+    --border-color: #e0e7ff;
+    --shadow: rgba(79, 70, 229, 0.1);
+    --juicy-gradient: linear-gradient(135deg, #4f46e5, #ec4899);
+    --bubble-glow: rgba(236, 72, 153, 0.3);
+    --pink-accent: #ec4899;
+    --glass-bg: rgba(255, 255, 255, 0.6);
+}
+
+.dark-theme {
+    --bg-color: #0f172a;
+    --card-bg: #1e293b;
+    --sidebar-bg: #1e293b;
+    --text-main: #818cf8;
+    --text-sub: #f1f5f9;
+    --border-color: #334155;
+    --shadow: rgba(0, 0, 0, 0.4);
+    --glass-bg: rgba(30, 41, 59, 0.7);
+}
+
+/* =========================================
+   2. BASE STYLES
+   ========================================= */
+body {
+    background-color: var(--bg-color);
+    font-family: 'Arial Rounded MT Bold', sans-serif;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
+    transition: background 0.3s ease;
+}
+
+/* =========================================
+   3. GATEWAY (LOGIN) LAYOUT 
+   ========================================= */
+.gateway-layout {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.bubble-card {
+    background: var(--card-bg);
+    padding: 50px;
+    border-radius: 60px;
+    box-shadow: 0 30px 60px var(--shadow);
+    text-align: center;
+    width: 90%;
+    max-width: 1100px;
+    min-height: 550px;
+    border: 10px solid var(--border-color);
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 10;
+}
+
+/* =========================================
+   4. HUB (DASHBOARD) LAYOUT
+   ========================================= */
+.sidebar {
+    width: 90px;
+    background: var(--sidebar-bg);
+    border-right: 4px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 30px;
+    gap: 25px;
+    z-index: 100;
+}
+
+.side-icon {
+    width: 60px; height: 60px;
+    background: #f3f4f6; border-radius: 20px;
+    display: flex; justify-content: center; align-items: center;
+    font-size: 28px; cursor: pointer;
+    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    color: #666;
+}
+
+.side-icon.active { background: var(--text-main); color: white; box-shadow: 0 10px 20px var(--shadow); }
+.side-icon:hover:not(.active) { transform: scale(1.15); background: var(--pink-accent); color: white; }
+
+.main-content {
+    flex-grow: 1;
+    padding: 50px;
+    overflow-y: auto;
+}
+
+/* =========================================
+   5. UNIFIED COMPONENTS (The Connection)
+   ========================================= */
+
+/* The "Bouncy" Button (Used in both pages) */
+.go-btn, .new-game-btn, .play-btn {
+    background: var(--juicy-gradient);
+    color: white;
+    border: none;
+    border-radius: 35px;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 8px 0 #3730a3, 0 15px 25px var(--bubble-glow);
+    transition: 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.go-btn:active, .new-game-btn:active, .play-btn:active {
+    transform: translateY(6px);
+    box-shadow: 0 2px 0 #3730a3;
+}
+
+/* Game Grids and Cards */
+#game-list, .game-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 25px;
+    margin-top: 20px;
+}
+
+.game-card, .market-card {
+    background: var(--card-bg);
+    border-radius: 35px;
+    padding: 30px;
+    border: 6px solid var(--border-color);
+    text-align: center;
+    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+    color: var(--text-sub);
+}
+
+.game-card:hover, .market-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--pink-accent);
+    box-shadow: 0 15px 30px var(--shadow);
+}
+
+/* Glass Capsules (Status & Brand) */
+.corner-brand, .user-status {
+    position: absolute;
+    top: 30px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    padding: 12px 24px;
+    border-radius: 40px;
+    border: 2px solid white;
+    box-shadow: 0 10px 20px var(--shadow);
+    z-index: 1000;
+}
+
+.corner-brand { left: 30px; color: var(--text-main); font-weight: bold; }
+.user-status { right: 30px; display: flex; align-items: center; gap: 15px; }
+
+/* The Slide Panel */
+.slide-panel {
+    position: fixed; bottom: -100%; left: 90px; right: 0;
+    background: var(--card-bg); border-top: 8px solid var(--text-main);
+    padding: 40px; height: 45%;
+    transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1);
+    z-index: 200; box-shadow: 0 -20px 50px rgba(0,0,0,0.2);
+}
+
+.slide-panel.open { bottom: 0; }
+
+/* =========================================
+   6. BUBBLE PHYSICS & ANIMATIONS
+   ========================================= */
+.bubble {
+    position: absolute;
+    bottom: -100px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+    pointer-events: auto;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
