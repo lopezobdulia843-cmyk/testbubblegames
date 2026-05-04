@@ -1,270 +1,149 @@
-/* 1. BACKGROUND & LAYOUT */
+/* 1. THE COLOR ENGINE (Merged Root & Dark Theme) */
+:root {
+    --bg-color: #f0f4ff;
+    --card-bg: white;
+    --sidebar-bg: white;
+    --text-main: #4f46e5;
+    --text-sub: #333;
+    --border-color: #e0e7ff;
+    --shadow: rgba(79, 70, 229, 0.1);
+    --juicy-gradient: linear-gradient(135deg, #4f46e5, #ec4899);
+    --bubble-glow: rgba(236, 72, 153, 0.3);
+}
+
+.dark-theme {
+    --bg-color: #0f172a;
+    --card-bg: #1e293b;
+    --sidebar-bg: #1e293b;
+    --text-main: #818cf8;
+    --text-sub: #f1f5f9;
+    --border-color: #334155;
+    --shadow: rgba(0, 0, 0, 0.4);
+}
+
+/* 2. CORE LAYOUT */
 body {
-    background-color: #f0f4ff; 
+    background-color: var(--bg-color);
+    font-family: 'Arial Rounded MT Bold', sans-serif;
+    margin: 0;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
     height: 100vh;
-    margin: 0;
-    font-family: 'Arial Rounded MT Bold', sans-serif; 
     overflow: hidden;
+    transition: background 0.3s ease;
+    justify-content: center; /* Centers login card */
+    align-items: center;     /* Centers login card */
 }
 
-/* 2. TOP LEFT CORNER BRAND - GLASS CAPSULE */
+/* 3. BRANDING & WELCOME (Glass Capsule Style) */
 .corner-brand {
-    position: absolute;
-    top: 30px;
-    left: 30px;
-    font-size: 22px; 
-    font-weight: bold;
-    color: #4f46e5;
-    background: rgba(255, 255, 255, 0.6);
+    position: absolute; top: 30px; left: 30px;
+    font-size: 22px; font-weight: bold; color: var(--text-main);
+    background: rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(10px);
-    padding: 12px 24px;
-    border-radius: 40px;
-    border: 2px solid white;
-    box-shadow: 0 10px 20px rgba(79, 70, 229, 0.1);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: default;
-    transition: 0.3s transform ease;
+    padding: 12px 24px; border-radius: 40px;
+    border: 2px solid var(--border-color);
+    box-shadow: 0 10px 20px var(--shadow);
+    display: flex; align-items: center; gap: 10px;
     z-index: 100;
 }
 
-.corner-brand:hover {
-    transform: scale(1.05);
-}
-
-.brand-pink {
-    color: #ec4899;
-}
-
-.brand-bubble {
-    font-size: 26px;
-    filter: drop-shadow(0 0 5px rgba(255,255,255,0.8));
-}
-
-/* 3. MAIN WELCOME TITLE */
+.brand-pink { color: #ec4899; }
 .page-welcome {
-    color: #4f46e5;
-    font-size: 48px; 
-    margin-bottom: 25px;
-    text-shadow: 3px 3px 0px rgba(255, 255, 255, 1);
-    font-weight: 900;
+    color: var(--text-main); font-size: 48px;
+    margin-bottom: 25px; font-weight: 900;
 }
 
-/* 4. THE WHITE CARD */
+/* 4. THE BUBBLE CARD (Login/Signup) */
 .bubble-card {
-    background: white;
-    padding: 50px; 
-    border-radius: 60px; 
-    box-shadow: 0 30px 60px rgba(0,0,0,0.05); 
-    text-align: center;
-    width: 90%; 
-    max-width: 1100px; 
-    min-height: 550px;
-    border: 10px solid #e0e7ff; 
-    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    position: relative;
-    z-index: 10;
+    background: var(--card-bg);
+    padding: 50px; border-radius: 60px;
+    box-shadow: 0 30px 60px var(--shadow);
+    text-align: center; width: 90%; max-width: 500px;
+    border: 10px solid var(--border-color);
+    z-index: 10; color: var(--text-sub);
 }
 
-/* 5. LOGO STYLE */
-h1 {
-    color: #4f46e5;
-    font-size: 42px; 
-    margin: 0 0 40px 0;
-}
-
-h1 span {
-    color: #ec4899; 
-}
-
-.bubble-icon {
-    font-size: 70px; 
-    display: block;
-    margin-bottom: 15px;
-    filter: drop-shadow(0 10px 15px rgba(79, 70, 229, 0.2));
-}
-
-/* 6. INPUTS & FORGOT LINK */
 .bouncy-input {
-    width: 100%;
-    padding: 22px; 
-    margin-bottom: 15px;
-    border: 3px solid #f3f4f6;
-    border-radius: 30px;
-    background: #f9fafb;
-    font-size: 20px; 
-    box-sizing: border-box;
-    outline: none;
-    transition: 0.3s;
+    width: 100%; padding: 22px; margin-bottom: 15px;
+    border: 3px solid var(--border-color); border-radius: 30px;
+    background: var(--bg-color); font-size: 20px;
+    color: var(--text-sub); outline: none; transition: 0.3s;
 }
 
-.bouncy-input:focus {
-    border-color: #4f46e5;
-    transform: scale(1.02);
-    background: white;
-}
-
-.password-group {
-    text-align: right;
-    margin-bottom: 30px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-}
-
-.forgot-link {
-    font-size: 14px;
-    color: #6366f1;
-    text-decoration: none;
-    margin-right: 15px;
-    font-weight: bold;
-}
-
-/* 7. THE PINK GO BUTTON */
 .go-btn {
-    width: 100%;
-    padding: 22px;
-    background: #ec4899; 
-    color: white;
-    border: none;
-    border-radius: 35px;
-    font-size: 22px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 10px 0 #d946ef; 
-    transition: 0.1s;
+    width: 100%; padding: 22px; background: #ec4899; color: white;
+    border: none; border-radius: 35px; font-size: 22px; font-weight: bold;
+    box-shadow: 0 10px 0 #d946ef; cursor: pointer;
 }
 
-.go-btn:active {
-    transform: translateY(6px);
-    box-shadow: 0 4px 0 #d946ef;
+.go-btn:active { transform: translateY(6px); box-shadow: 0 4px 0 #d946ef; }
+
+/* 5. THE SIDEBAR (Hub Mode) */
+.sidebar {
+    position: fixed; left: 0; top: 0; bottom: 0;
+    width: 90px; background: var(--sidebar-bg);
+    border-right: 4px solid var(--border-color);
+    display: flex; flex-direction: column; align-items: center;
+    padding-top: 30px; gap: 25px; z-index: 1000;
 }
 
-/* 8. SIGN UP FOOTER */
-.footer-links {
-    margin-top: 35px;
-    border-top: 3px solid #f0f4ff;
-    padding-top: 20px;
+.side-icon {
+    width: 60px; height: 60px; background: var(--bg-color);
+    border-radius: 20px; display: flex; justify-content: center;
+    align-items: center; font-size: 28px; cursor: pointer;
+    transition: 0.3s; color: var(--text-sub);
 }
 
-.footer-links p {
-    font-size: 18px;
-    color: #666;
-    margin: 0;
+.side-icon.active { background: #4f46e5; color: white; }
+
+/* 6. HUB CONTENT & GRID */
+.main-content {
+    flex-grow: 1; padding: 50px 50px 50px 140px; /* Space for sidebar */
+    overflow-y: auto; display: flex; flex-direction: column;
+    gap: 40px; width: 100%; height: 100vh;
 }
 
-.signup-link {
-    color: #ec4899;
-    text-decoration: none;
-    font-weight: bold;
-    cursor: pointer;
+.game-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 25px;
 }
 
-/* 9. LOADING SPINNER */
-.loader {
-    display: none; 
-    width: 40px;
-    height: 40px;
-    border: 5px solid #f3f3f3;
-    border-top: 5px solid #4f46e5;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 20px auto;
+.market-card {
+    background: var(--card-bg); border-radius: 35px; padding: 30px;
+    border: 6px solid var(--border-color); text-align: center;
+    transition: 0.3s; cursor: pointer; color: var(--text-sub);
 }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+/* 7. THE JUICY NEW GAME BUTTON */
+.new-game-btn {
+    background: var(--juicy-gradient); color: white;
+    padding: 18px 35px; border-radius: 50px; border: none;
+    font-weight: 900; font-size: 20px; cursor: pointer;
+    box-shadow: 0 8px 0 #3730a3, 0 15px 25px var(--bubble-glow);
+    animation: float 3s ease-in-out infinite;
 }
 
-/* 10. USER STATUS - GLASS */
-.user-status {
-    position: absolute;
-    top: 30px;
-    right: 30px;
-    background: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(10px);
-    padding: 12px 24px;
-    border-radius: 40px;
-    border: 2px solid white;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    z-index: 100;
+/* 8. THE SLIDE PANEL */
+.slide-panel {
+    position: fixed; bottom: -100%; left: 90px; right: 0;
+    background: var(--card-bg); border-top: 8px solid var(--text-main);
+    padding: 40px; height: 45%; transition: 0.5s ease;
+    z-index: 1100; box-shadow: 0 -20px 50px rgba(0,0,0,0.2);
 }
 
-#display-username {
-    color: #4f46e5;
-    font-weight: 900;
-    font-size: 18px;
-}
+.slide-panel.open { bottom: 0; }
 
-.logout-btn {
-    background: #ec4899;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.2s;
+/* 9. TOGGLE SWITCH */
+.switch { position: relative; display: inline-block; width: 60px; height: 34px; }
+.slider { 
+    position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; 
+    background-color: #ccc; transition: .4s; border-radius: 34px; 
 }
+.slider:before { 
+    position: absolute; content: ""; height: 26px; width: 26px; 
+    left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; 
+}
+input:checked + .slider { background-color: #ec4899; }
+input:checked + .slider:before { transform: translateX(26px); }
 
-/* 11. HUB AREA (PREPARED BUT HIDDEN) */
-#hub-area {
-    display: none; /* Keep hidden on load! */
-}
-
-.tab-menu {
-    display: flex;
-    gap: 15px;
-    margin: 20px 0;
-    justify-content: center;
-}
-
-.tab-btn {
-    background: #f0f4ff;
-    border: 3px solid #e0e7ff;
-    padding: 12px 25px;
-    border-radius: 30px;
-    font-weight: bold;
-    color: #4f46e5;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.tab-btn.active {
-    background: #ec4899;
-    color: white;
-    border-color: #ec4899;
-    transform: scale(1.1);
-}
-
-#game-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
-    margin-top: 20px;
-    max-height: 400px;
-    overflow-y: auto;
-}
-
-.game-card {
-    background: #f9fafb;
-    border: 3px solid #f3f4f6;
-    padding: 25px;
-    border-radius: 35px;
-    transition: 0.3s;
-}
-
-.game-card:hover {
-    transform: translateY(-5px);
-    border-color: #ec4899;
-}
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
