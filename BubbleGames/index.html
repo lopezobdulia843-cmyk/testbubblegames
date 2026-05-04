@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bubble Games | Welcome</title>
+    <!-- Path updated to include 'static/' based on your folder structure -->
     <link rel="stylesheet" href="static/style.css">
 </head>
 <body>
@@ -13,6 +14,7 @@
         Bubble<span class="brand-pink">Games</span>
     </div>
 
+    <!-- User Status (Hidden until Login) -->
     <div id="user-status" class="user-status" style="display: none;">
         <span id="display-username">Player</span>
         <button class="logout-btn" onclick="handleLogout()">Logout ⏻</button>
@@ -27,6 +29,7 @@
                 <h1>Bubble<span>Games</span></h1>
             </div>
 
+            <!-- This is the ONLY area active on entry -->
             <div id="auth-area">
                 <div class="input-area">
                     <input type="text" id="username" placeholder="Username" class="bouncy-input">
@@ -35,28 +38,19 @@
                         <a href="#" class="forgot-link" id="forgot-pass">Forgot Password?</a>
                     </div>
                 </div>
-                <div id="loader" class="loader"></div>
+                <div id="loader" class="loader" style="display: none;"></div>
                 <button class="go-btn" id="main-button" onclick="handleAuth()">Let's Play!</button>
                 <div class="footer-links">
                     <p id="toggle-container">New here? <a href="#" class="signup-link" onclick="switchMode()">Sign Up!</a></p>
                 </div>
             </div>
 
-            <div id="hub-area" style="display: none;">
-                <input type="text" id="game-search" placeholder="What would you like to play? 🔍" class="bouncy-input">
-                
-                <div class="tab-menu">
-                    <button id="tab-global" class="tab-btn active" onclick="switchTab('global')">Global Games</button>
-                    <button id="tab-mine" class="tab-btn" onclick="switchTab('mine')">My Games</button>
-                </div>
-
-                <div id="game-list">
-                    </div>
-            </div>
+            <!-- Hub Section is removed for now to prevent visual bugs -->
         </div>
     </div>
 
     <script>
+        // Inline UI Logic for switching between Login and Signup
         window.mode = "login"; 
 
         function switchMode() {
@@ -86,8 +80,8 @@
         }
     </script>
 
+    <!-- Essential Scripts Only -->
     <script type="module" src="static/gateway.js"></script>
     <script type="module" src="static/hub.js"></script>
-    <script src="static/bubbles.js"></script>
 </body>
 </html>
