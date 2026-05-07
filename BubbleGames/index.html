@@ -4,105 +4,97 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bubble Games | Welcome</title>
+
+    <!-- CSS FILE -->
     <link rel="stylesheet" href="static/style.css">
 </head>
 <body>
 
-    <!-- AUTH SECTION (Login/Signup) -->
-    <div id="auth-section" class="main-wrapper">
-        <div class="corner-brand">
-            <span class="brand-bubble">🫧</span> Bubble<span class="brand-pink">Games</span>
-        </div>
+    <div class="corner-brand">
+        <span class="brand-bubble">🫧</span> 
+        Bubble<span class="brand-pink">Games</span>
+    </div>
+
+    <div id="user-status" class="user-status" style="display: none;">
+        <span id="display-username">Player</span>
+        <button class="logout-btn" onclick="handleLogout()">Logout ⏻</button>
+    </div>
+
+    <div class="main-wrapper">
+        <h2 class="page-welcome" id="page-title">Getting Started</h2>
+
         <div class="bubble-card">
             <div class="brand">
                 <span class="bubble-icon">🫧</span>
                 <h1>Bubble<span>Games</span></h1>
             </div>
+
             <div id="auth-area">
                 <div class="input-area">
                     <input type="text" id="username" placeholder="Username" class="bouncy-input">
+
                     <div class="password-group">
                         <input type="password" id="password" placeholder="Password" class="bouncy-input">
-                        <a href="#" class="forgot-link" id="forgot-pass">Forgot Password?</a>
+
+                        <a href="#" class="forgot-link" id="forgot-pass">
+                            Forgot Password?
+                        </a>
                     </div>
                 </div>
+
                 <div id="loader" class="loader"></div>
-                <button class="go-btn" id="main-button">Let's Play!</button>
+
+                <button class="go-btn" id="main-button" onclick="handleAuth()">
+                    Let's Play!
+                </button>
+
                 <div class="footer-links">
-                    <p id="toggle-container">New here? <a href="#" class="signup-link">Sign Up!</a></p>
+                    <p id="toggle-container">
+                        New here?
+                        <a href="#" class="signup-link" onclick="switchMode()">
+                            Sign Up!
+                        </a>
+                    </p>
                 </div>
+            </div>
+
+            <div id="hub-area" style="display: none;">
+
+                <input
+                    type="text"
+                    id="game-search"
+                    placeholder="What would you like to play? 🔍"
+                    class="bouncy-input"
+                >
+
+                <div class="tab-menu">
+                    <button
+                        id="tab-global"
+                        class="tab-btn active"
+                        onclick="switchTab('global')"
+                    >
+                        Global Games
+                    </button>
+
+                    <button
+                        id="tab-mine"
+                        class="tab-btn"
+                        onclick="switchTab('mine')"
+                    >
+                        My Games
+                    </button>
+                </div>
+
+                <div id="game-list"></div>
+
             </div>
         </div>
     </div>
 
-    <!-- HUB SECTION (Hidden until Login) -->
-    <div id="hub-section" style="display: none; height: 100vh; width: 100vw;">
-        <div class="sidebar">
-            <div id="nav-home" class="side-icon active" onclick="switchTab('home')">🏠</div>
-            <div id="nav-create" class="side-icon" onclick="switchTab('create')">🧱</div>
-            <div id="nav-settings" class="side-icon" onclick="switchTab('settings')">⚙️</div>
-        </div>
-
-        <div id="view-home" class="main-content">
-            <div style="text-align: center;">
-                <h2>Discover Games</h2>
-                <div style="position: relative; display: inline-block; width: 100%; max-width: 800px;">
-                    <span style="position: absolute; left: 25px; top: 22px; font-size: 30px;">🔍</span>
-                    <input type="text" class="hero-search" placeholder="Search all bubble games...">
-                </div>
-            </div>
-            <div class="game-grid" id="global-game-list">
-                <!-- Games load here -->
-            </div>
-        </div>
-
-        <div id="view-create" class="main-content" style="display: none;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h2>Your Creations</h2>
-                <div class="new-game-container">
-                    <button class="new-game-btn">+ New Game</button>
-                    <span class="tagline">Let your imagination flow! ✨</span>
-                </div>
-            </div>
-            <div class="game-grid" id="my-game-list">
-                <!-- User games load here -->
-            </div>
-        </div>
-
-        <div id="view-settings" class="main-content" style="display: none;">
-            <h2>Settings</h2>
-            <div class="settings-card">
-                <div class="toggle-row">
-                    <span><strong>Dark Mode</strong></span>
-                    <label class="switch">
-                        <input type="checkbox" id="darkToggle" onclick="toggleDarkMode()">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <button class="logout-btn" id="logout-trigger">🚪 Log Out</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- PANEL OVERLAY -->
-    <div id="actionPanel" class="slide-panel">
-        <div style="display: flex; justify-content: space-between;">
-            <div style="display: flex; gap: 20px; align-items: center;">
-                <span id="panelIcon" style="font-size: 60px;">🎮</span>
-                <h2 id="panelTitle">Game Title</h2>
-            </div>
-            <button class="save-btn" onclick="closePanel()">Close</button>
-        </div>
-        <div id="panelContent">
-            <button class="play-btn">Play Now</button>
-        </div>
-    </div>
-
-    <!-- SCRIPTS -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="static/supabase.js"></script>
+    <!-- YOUR FILES -->
     <script type="module" src="static/gateway.js"></script>
-    <script src="static/hub.js"></script>
+    <script type="module" src="static/hub.js"></script>
     <script src="static/bubbles.js"></script>
+
 </body>
 </html>
