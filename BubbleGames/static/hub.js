@@ -1,62 +1,47 @@
-// hub.js - Managing the Game Dashboard
-window.currentTab = 'your-games';
-
-// Example Data (You can move this to Supabase later!)
-const games = [
-    { id: 1, title: "Bubble Pop Rage", type: "global", icon: "🫧" },
-    { id: 2, title: "iPad Parkour", type: "global", icon: "🏃" },
-    { id: 3, title: "My Secret Level", type: "personal", icon: "💎" }
-];
-
-window.switchTab = (tabName) => {
-    window.currentTab = tabName;
+/**
+ * Tab Switching Logic
+ */
+function switchTab(tabName) {
+    closePanel();
+    // Hide all views
+    ['view-home', 'view-create', 'view-settings'].forEach(id => {
+        document.getElementById(id).style.display = 'none';
+    });
+    // Remove active class from icons
+    ['nav-home', 'nav-create', 'nav-settings'].forEach(id => {
+        document.getElementById(id).classList.remove('active');
+    });
     
-    // Update Button Styles
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-        if(btn.innerText.toLowerCase().includes(tabName.split('-')[0])) {
-            btn.classList.add('active');
-        }
-    });
+    // Show selected
+    document.getElementById('view-' + tabName).style.display = 'flex';
+    document.getElementById('nav-' + tabName).classList.add('active');
+}
 
-    renderGames();
-};
+/**
+ * Slide Panel Logic
+ */
+function openPanel(name, icon, isOwned) {
+    document.getElementById('panelTitle').innerText = name;
+    document.getElementById('panelIcon').innerText = icon;
+    document.getElementById('actionPanel').classList.add('open');
+}
 
-window.renderGames = (filter = "") => {
-    const list = document.getElementById('game-list');
-    list.innerHTML = ""; // Clear current list
+function closePanel() {
+    document.getElementById('actionPanel').classList.remove('open');
+}
 
-    const filtered = games.filter(g => {
-        const matchesTab = (window.currentTab === 'global-games' && g.type === 'global') || 
-                           (window.currentTab === 'your-games' && g.type === 'personal');
-        const matchesSearch = g.title.toLowerCase().includes(filter.toLowerCase());
-        return matchesTab && matchesSearch;
-    });
+/**
+ * Theme Logic
+ */
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-theme');
+    const isDark = document.body.classList.contains('dark-theme');
+    localStorage.setItem('bubbleTheme', isDark ? 'dark' : 'light');
+}
 
-    if (filtered.length === 0) {
-        list.innerHTML = `<p class="no-games">No games found... yet! 🎈</p>`;
-        return;
-    }
-
-    filtered.forEach(game => {
-        const card = document.createElement('div');
-        card.className = 'game-card bouncy-animation';
-        card.innerHTML = `
-            <div class="game-icon">${game.icon}</div>
-            <h3>${game.title}</h3>
-            <button class="play-small-btn">Launch</button>
-        `;
-        list.appendChild(card);
-    });
-};
-
-// Search Bar Listener
-document.getElementById('game-search')?.addEventListener('input', (e) => {
-    renderGames(e.target.value);
-});
-
-window.resetHub = () => {
-    document.getElementById('game-search').value = "";
-    switchTab('your-games');
-    document.getElementById('hub-back').style.display = 'none';
-};
+// Load Theme on Start
+if (localStorage.getItem('bubbleTheme') === 'dark') {
+    document.body.classList.add('dark-theme');
+    const toggle = document.getElementById('darkToggle');
+    if(toggle) toggle.checked = true;
+}
