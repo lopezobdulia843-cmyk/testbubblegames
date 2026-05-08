@@ -1,62 +1,111 @@
-// hub.js - Managing the Game Dashboard
-window.currentTab = 'your-games';
-
-// Example Data (You can move this to Supabase later!)
-const games = [
-    { id: 1, title: "Bubble Pop Rage", type: "global", icon: "🫧" },
-    { id: 2, title: "iPad Parkour", type: "global", icon: "🏃" },
-    { id: 3, title: "My Secret Level", type: "personal", icon: "💎" }
+/**
+ * 1. THE GAME DATABASE
+ * This is where you add new games. No HTML needed—just add an object!
+ */
+const gameDatabase = [
+    {
+        id: "lostination-001",
+        name: "Lostination",
+        icon: "🌑",
+        description: "A 3D browser-based horror experience. Can you survive the dark?",
+        category: "discover",
+        tags: ["Horror", "3D", "Multiplayer"]
+    },
+    {
+        id: "bubble-craft-001",
+        name: "Bubble Craft",
+        icon: "⛏️",
+        description: "Your custom Minecraft server! Survival and building with the crew.",
+        category: "my-games",
+        tags: ["Survival", "Building"]
+    },
+    {
+        id: "neon-runner-001",
+        name: "Neon Runner",
+        icon: "🏃",
+        description: "High-speed physics-based rage game. Don't fall off!",
+        category: "discover",
+        tags: ["Physics", "Rage"]
+    }
 ];
 
-window.switchTab = (tabName) => {
-    window.currentTab = tabName;
-    
-    // Update Button Styles
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-        if(btn.innerText.toLowerCase().includes(tabName.split('-')[0])) {
-            btn.classList.add('active');
-        }
-    });
+/**
+ * 2. THE CARD GENERATOR
+ * This function loops through the database and builds the HTML cards.
+ */
+window.renderGameList = () => {
+    const discoverGrid = document.getElementById('global-game-list');
+    const myGamesGrid = document.getElementById('my-game-list');
 
-    renderGames();
-};
+    // Clear current grids to avoid duplicates
+    if (discoverGrid) discoverGrid.innerHTML = '';
+    if (myGamesGrid) myGamesGrid.innerHTML = '';
 
-window.renderGames = (filter = "") => {
-    const list = document.getElementById('game-list');
-    list.innerHTML = ""; // Clear current list
-
-    const filtered = games.filter(g => {
-        const matchesTab = (window.currentTab === 'global-games' && g.type === 'global') || 
-                           (window.currentTab === 'your-games' && g.type === 'personal');
-        const matchesSearch = g.title.toLowerCase().includes(filter.toLowerCase());
-        return matchesTab && matchesSearch;
-    });
-
-    if (filtered.length === 0) {
-        list.innerHTML = `<p class="no-games">No games found... yet! 🎈</p>`;
-        return;
-    }
-
-    filtered.forEach(game => {
+    gameDatabase.forEach(game => {
+        // Create the card element
         const card = document.createElement('div');
-        card.className = 'game-card bouncy-animation';
+        card.className = 'market-card';
+        card.onclick = () => openPanel(game.name, game.icon, game.description);
+
         card.innerHTML = `
             <div class="game-icon">${game.icon}</div>
-            <h3>${game.title}</h3>
-            <button class="play-small-btn">Launch</button>
+            <div class="card-info">
+                <h3>${game.name}</h3>
+                <p>${game.description}</p>
+                <div class="tag-row">
+                    ${game.tags.map(tag => `<span class="game-tag">${tag}</span>`).join('')}
+                </div>
+            </div>
         `;
-        list.appendChild(card);
+
+        // Sort into the correct grid based on category
+        if (game.category === 'discover' && discoverGrid) {
+            discoverGrid.appendChild(card);
+        } else if (game.category === 'my-games' && myGamesGrid) {
+            myGamesGrid.appendChild(card);
+        }
     });
 };
 
-// Search Bar Listener
-document.getElementById('game-search')?.addEventListener('input', (e) => {
-    renderGames(e.target.value);
-});
+/**
+ * 3. TAB CONTROLLER
+ * Switches between Home, Create, and Settings views.
+ */
+window.switchTab = (tabName) => {
+    // Hide all view containers
+    const views = document.querySelectorAll('.main-content');
+    views.forEach(v => v.style.display = 'none');
 
-window.resetHub = () => {
-    document.getElementById('game-search').value = "";
-    switchTab('your-games');
-    document.getElementById('hub-back').style.display = 'none';
+    // Remove 'active' state from all sidebar icons
+    const icons = document.querySelectorAll('.side-icon');
+    icons.forEach(i => i.classList.remove('active'));
+
+    // Show the selected view
+    const activeView = document.getElementById(`view-${tabName}`);
+    const activeIcon = document.getElementById(`nav-${tabName}`);
+
+    if (activeView) activeView.style.display = 'flex';
+    if (activeIcon) activeIcon.classList.add('active');
+
+    // Close the slide panel if it's open during a tab switch
+    closePanel();
+};
+
+/**
+ * 4. SLIDE PANEL LOGIC
+ * Opens the side panel to show game details when a card is clicked.
+ */
+window.openPanel = (name, icon, desc) => {
+    const panel = document.getElementById('actionPanel');
+    document.getElementById('panelTitle').innerText = name;
+    document.getElementById('panelIcon').innerText = icon;
+    document.getElementById('panelContent').innerHTML = `
+        <p style="font-size: 18px; line-height: 1.5; color: var(--text-sub);">${desc}</p>
+        <button class="play-btn" style="margin-top: 30px;">PLAY NOW</button>
+    `;
+    panel.classList.add('open');
+};
+
+window.closePanel = () => {
+    document.getElementById('actionPanel').classList.remove('open');
 };
