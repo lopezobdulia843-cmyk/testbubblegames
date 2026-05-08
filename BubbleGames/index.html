@@ -10,16 +10,19 @@
 </head>
 <body>
 
+    <!-- BRANDING -->
     <div class="corner-brand">
         <span class="brand-bubble">🫧</span> 
         Bubble<span class="brand-pink">Games</span>
     </div>
 
+    <!-- PLAYER STATUS (Hidden until Login) -->
     <div id="user-status" class="user-status" style="display: none;">
         <span id="display-username">Player</span>
-        <button class="logout-btn" onclick="handleLogout()">Logout ⏻</button>
+        <button class="logout-btn" id="logout-trigger">Logout ⏻</button>
     </div>
 
+    <!-- MAIN WRAPPER -->
     <div class="main-wrapper">
         <h2 class="page-welcome" id="page-title">Getting Started</h2>
 
@@ -29,16 +32,14 @@
                 <h1>Bubble<span>Games</span></h1>
             </div>
 
+            <!-- 1. AUTH SECTION -->
             <div id="auth-area">
                 <div class="input-area">
                     <input type="text" id="username" placeholder="Username" class="bouncy-input">
 
                     <div class="password-group">
                         <input type="password" id="password" placeholder="Password" class="bouncy-input">
-
-                        <a href="#" class="forgot-link" id="forgot-pass">
-                            Forgot Password?
-                        </a>
+                        <a href="#" class="forgot-link" id="forgot-pass">Forgot Password?</a>
                     </div>
                 </div>
 
@@ -50,48 +51,58 @@
 
                 <div class="footer-links">
                     <p id="toggle-container">
-                        New here?
-                        <a href="#" class="signup-link" onclick="switchMode()">
-                            Sign Up!
-                        </a>
+                        New here? 
+                        <a href="#" class="signup-link" id="mode-toggle">Sign Up!</a>
                     </p>
                 </div>
             </div>
 
+            <!-- 2. HUB SECTION (The Game Launcher) -->
             <div id="hub-area" style="display: none;">
 
-                <input
-                    type="text"
-                    id="game-search"
-                    placeholder="What would you like to play? 🔍"
+                <input 
+                    type="text" 
+                    id="game-search" 
+                    placeholder="What would you like to play? 🔍" 
                     class="bouncy-input"
                 >
 
                 <div class="tab-menu">
-                    <button
-                        id="tab-global"
-                        class="tab-btn active"
-                        onclick="switchTab('global')"
-                    >
-                        Global Games
+                    <button id="nav-discover" class="tab-btn active" onclick="switchTab('discover')">
+                        Discover
                     </button>
-
-                    <button
-                        id="tab-mine"
-                        class="tab-btn"
-                        onclick="switchTab('mine')"
-                    >
+                    <button id="nav-my-games" class="tab-btn" onclick="switchTab('my-games')">
                         My Games
                     </button>
                 </div>
 
-                <div id="game-list"></div>
+                <!-- GRIDS FOR HUB.JS TO FILL -->
+                <div id="view-discover" class="main-content">
+                    <div id="global-game-list" class="game-grid"></div>
+                </div>
+
+                <div id="view-my-games" class="main-content" style="display: none;">
+                    <div id="my-game-list" class="game-grid"></div>
+                </div>
 
             </div>
         </div>
     </div>
 
-    <!-- YOUR FILES -->
+    <!-- 3. SLIDE PANEL (For Game Details) -->
+    <div id="actionPanel" class="slide-panel">
+        <div class="panel-header">
+            <span id="panelIcon" style="font-size: 50px;">🎮</span>
+            <h2 id="panelTitle">Game Title</h2>
+            <button class="close-panel-btn" onclick="closePanel()">✕</button>
+        </div>
+        <div id="panelContent">
+            <!-- Filled by hub.js -->
+        </div>
+    </div>
+
+    <!-- YOUR SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="module" src="static/gateway.js"></script>
     <script type="module" src="static/hub.js"></script>
     <script src="static/bubbles.js"></script>
