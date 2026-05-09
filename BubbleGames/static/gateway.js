@@ -16,7 +16,7 @@ window.switchMode = () => {
         btn.innerText = "🫧 Let's Play! 🫧"; // Keeping it fun!
         if (forgotPass) forgotPass.style.display = 'none'; // Bye bye link!
         toggleContainer.innerHTML = `
-            Already a pro? 
+            Already a Member? 
             <a href="#" class="signup-link" onclick="switchMode()">Log In!</a>
         `;
     } else {
