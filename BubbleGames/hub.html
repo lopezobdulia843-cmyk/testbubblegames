@@ -33,7 +33,11 @@
     <div id="view-create" class="main-content" style="display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h2>Your Creations</h2>
-            <button class="new-game-btn">+ New Game</button>
+            <!-- Updated to use your juicy CSS classes -->
+            <div class="new-game-container">
+                <button class="new-game-btn">+ New Game</button>
+                <span class="tagline">Start your next hit!</span>
+            </div>
         </div>
         <div class="game-grid" id="owned-game-grid">
             <!-- Your games appear here -->
@@ -43,8 +47,8 @@
     <!-- SETTINGS TAB -->
     <div id="view-settings" class="main-content" style="display: none;">
         <h2>Settings</h2>
-        <div style="background: var(--card-bg); padding: 30px; border-radius: 30px; border: 5px solid var(--border-color); max-width: 500px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <div style="background: var(--card-bg, white); padding: 30px; border-radius: 30px; border: 5px solid var(--border-color, #e0e7ff); max-width: 500px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 20px;">
                 <span><strong>Dark Mode</strong></span>
                 <label class="switch">
                     <input type="checkbox" id="darkToggle" onclick="toggleDarkMode()">
