@@ -13,7 +13,7 @@ window.switchMode = () => {
     if (window.mode === "login") {
         window.mode = "signup";
         title.innerText = "Join the Club! ✨";
-        btn.innerText = "Let's Play! 🫧"; // Keeping it fun!
+        btn.innerText = "🫧 Let's Play! 🫧"; // Keeping it fun!
         if (forgotPass) forgotPass.style.display = 'none'; // Bye bye link!
         toggleContainer.innerHTML = `
             Already a pro? 
@@ -22,7 +22,7 @@ window.switchMode = () => {
     } else {
         window.mode = "login";
         title.innerText = "Getting Started";
-        btn.innerText = "Let's Play!";
+        btn.innerText = "🫧 Let's Play! 🫧";
         if (forgotPass) forgotPass.style.display = 'inline'; // Welcome back link!
         toggleContainer.innerHTML = `
             New here? 
