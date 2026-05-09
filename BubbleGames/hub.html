@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bubble Games | The Hub</title>
-    <!-- Linking your juicy external CSS -->
+    <!-- Linked your external CSS -->
     <link rel="stylesheet" href="static/style.css">
 </head>
 <body>
@@ -33,10 +33,7 @@
     <div id="view-create" class="main-content" style="display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h2>Your Creations</h2>
-            <div class="new-game-container">
-                <button class="new-game-btn">+ New Game</button>
-                <span class="tagline">Start your next hit!</span>
-            </div>
+            <button class="new-game-btn">+ New Game</button>
         </div>
         <div class="game-grid" id="owned-game-grid">
             <!-- Your games appear here -->
@@ -47,7 +44,7 @@
     <div id="view-settings" class="main-content" style="display: none;">
         <h2>Settings</h2>
         <div style="background: var(--card-bg); padding: 30px; border-radius: 30px; border: 5px solid var(--border-color); max-width: 500px;">
-            <div class="toggle-row">
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                 <span><strong>Dark Mode</strong></span>
                 <label class="switch">
                     <input type="checkbox" id="darkToggle" onclick="toggleDarkMode()">
@@ -75,7 +72,7 @@
 
     <!-- REAL LOGIC SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Linking your external JS brain -->
+    <!-- Linked your external JS module -->
     <script type="module" src="static/hub.js"></script>
 </body>
 </html>
