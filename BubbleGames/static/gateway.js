@@ -3,24 +3,27 @@ import { supabase } from './supabase.js';
 // 1. SET DEFAULT MODE
 window.mode = "login"; 
 
-// 2. TOGGLE BETWEEN SIGNUP AND LOGIN
+// 2. TOGGLE BETWEEN SIGNUP AND LOGIN (NOW WITH MORE HYPE!)
 window.switchMode = () => {
     const title = document.getElementById('page-title');
     const btn = document.getElementById('main-button');
     const toggleContainer = document.getElementById('toggle-container');
+    const forgotPass = document.getElementById('forgot-pass');
 
     if (window.mode === "login") {
         window.mode = "signup";
-        title.innerText = "Create Account";
-        btn.innerText = "Register!";
+        title.innerText = "Join the Club! ✨";
+        btn.innerText = "Let's Play! 🫧"; // Keeping it fun!
+        if (forgotPass) forgotPass.style.display = 'none'; // Bye bye link!
         toggleContainer.innerHTML = `
-            Already have an account? 
+            Already a pro? 
             <a href="#" class="signup-link" onclick="switchMode()">Log In!</a>
         `;
     } else {
         window.mode = "login";
         title.innerText = "Getting Started";
         btn.innerText = "Let's Play!";
+        if (forgotPass) forgotPass.style.display = 'inline'; // Welcome back link!
         toggleContainer.innerHTML = `
             New here? 
             <a href="#" class="signup-link" onclick="switchMode()">Sign Up!</a>
@@ -114,7 +117,7 @@ function resetButton(btn, ldr) {
     ldr.style.display = 'none';
     btn.style.opacity = '1';
     btn.disabled = false;
-    btn.innerText = window.mode === "signup" ? "Register!" : "Let's Play!";
+    btn.innerText = "Let's Play! 🫧"; // Always stay fun!
 }
 
 // 4. UI SWAP TO HUB
