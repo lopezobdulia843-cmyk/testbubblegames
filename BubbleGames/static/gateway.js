@@ -120,21 +120,11 @@ function resetButton(btn, ldr) {
     btn.innerText = "Let's Play! 🫧"; // Always stay fun!
 }
 
-// 4. UI SWAP TO HUB
+// 4. TELEPORT TO THE HUB! 🚀
 function showWelcome(user) {
-    const authArea = document.getElementById('auth-area');
-    const hubArea = document.getElementById('hub-area');
-    const userStatus = document.getElementById('user-status');
-    const displayUsername = document.getElementById('display-username');
-    const pageTitle = document.getElementById('page-title');
-
-    if (authArea) authArea.style.display = 'none';
-    if (hubArea) hubArea.style.display = 'block';
-    if (userStatus) userStatus.style.display = 'flex';
-    if (displayUsername) displayUsername.innerText = user;
-    if (pageTitle) pageTitle.innerText = "Welcome Back!";
-
-    if (window.renderGameList) window.renderGameList();
+    // Instead of just hiding divs, we move to the new HTML file!
+    // We can also pass the username in the URL or just let hub.js fetch it
+    window.location.href = 'hub.html'; 
 }
 
 // 5. AUTO-LOGIN CHECK
