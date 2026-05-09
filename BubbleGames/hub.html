@@ -4,199 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bubble Games | The Hub</title>
-    <!-- We keep your exact CSS here -->
-    <style>
-        :root {
-            --bg-color: #f0f4ff;
-            --card-bg: white;
-            --sidebar-bg: white;
-            --text-main: #4f46e5;
-            --text-sub: #333;
-            --border-color: #e0e7ff;
-            --shadow: rgba(79, 70, 229, 0.1);
-            --juicy-gradient: linear-gradient(135deg, #4f46e5, #ec4899);
-            --bubble-glow: rgba(236, 72, 153, 0.3);
-        }
-
-        .dark-theme {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --sidebar-bg: #1e293b;
-            --text-main: #818cf8;
-            --text-sub: #f1f5f9;
-            --border-color: #334155;
-            --shadow: rgba(0, 0, 0, 0.4);
-        }
-
-        body {
-            background-color: var(--bg-color);
-            font-family: 'Arial Rounded MT Bold', sans-serif;
-            margin: 0;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-            transition: background 0.3s ease;
-        }
-
-        /* SIDEBAR */
-        .sidebar {
-            width: 90px;
-            background: var(--sidebar-bg);
-            border-right: 4px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-top: 30px;
-            gap: 25px;
-            z-index: 10;
-        }
-
-        .side-icon {
-            width: 60px;
-            height: 60px;
-            background: #f3f4f6;
-            border-radius: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 28px;
-            cursor: pointer;
-            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            color: #666;
-        }
-
-        .side-icon.active {
-            background: #4f46e5;
-            color: white;
-            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
-        }
-
-        .side-icon:hover:not(.active) { 
-            transform: scale(1.15); 
-            background: #ec4899; 
-            color: white; 
-        }
-
-        /* MAIN CONTENT */
-        .main-content {
-            flex-grow: 1;
-            padding: 50px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 40px;
-        }
-
-        h2 { color: var(--text-main); font-size: 32px; }
-
-        .hero-search {
-            width: 100%;
-            max-width: 800px;
-            padding: 25px 35px 25px 70px;
-            font-size: 22px;
-            border-radius: 40px;
-            border: 5px solid var(--border-color);
-            background: var(--card-bg);
-            color: var(--text-sub);
-            outline: none;
-        }
-
-        /* GAME CARDS */
-        .game-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 25px;
-        }
-
-        .market-card {
-            background: var(--card-bg);
-            border-radius: 35px;
-            padding: 30px;
-            border: 6px solid var(--border-color);
-            text-align: center;
-            transition: 0.3s;
-            cursor: pointer;
-            color: var(--text-sub);
-            position: relative;
-        }
-
-        .market-card:hover { transform: translateY(-10px); border-color: var(--text-main); }
-        .market-icon { font-size: 55px; display: block; margin-bottom: 10px; }
-
-        .edit-badge {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: #4f46e5;
-            color: white;
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 11px;
-        }
-
-        /* NEW GAME BUTTON */
-        .new-game-btn {
-            background: var(--juicy-gradient);
-            color: white;
-            padding: 18px 35px;
-            border-radius: 50px;
-            border: none;
-            cursor: pointer;
-            font-weight: 900;
-            font-size: 20px;
-            text-transform: uppercase;
-            box-shadow: 0 8px 0 #3730a3, 0 15px 25px var(--bubble-glow);
-            transition: 0.2s;
-        }
-
-        /* SLIDE PANEL */
-        .slide-panel {
-            position: fixed;
-            bottom: -100%;
-            left: 90px;
-            right: 0;
-            background: var(--card-bg);
-            border-top: 8px solid var(--text-main);
-            padding: 40px;
-            height: 45%;
-            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1);
-            z-index: 100;
-            box-shadow: 0 -20px 50px rgba(0,0,0,0.2);
-            color: var(--text-sub);
-        }
-
-        .slide-panel.open { bottom: 0; }
-
-        .play-btn {
-            background: var(--juicy-gradient);
-            color: white;
-            padding: 25px 60px;
-            border-radius: 60px;
-            border: none;
-            font-size: 32px;
-            font-weight: 800;
-            cursor: pointer;
-            box-shadow: 0 10px 0 #3730a3, 0 15px 30px rgba(236, 72, 153, 0.4);
-        }
-
-        .logout-btn {
-            background: var(--card-bg);
-            color: #ef4444;
-            border: 3px solid #fee2e2;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-
-        .switch { position: relative; display: inline-block; width: 60px; height: 34px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: #ec4899; }
-        input:checked + .slider:before { transform: translateX(26px); }
-    </style>
+    <!-- Linking your juicy external CSS -->
+    <link rel="stylesheet" href="static/style.css">
 </head>
 <body>
 
@@ -224,7 +33,10 @@
     <div id="view-create" class="main-content" style="display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h2>Your Creations</h2>
-            <button class="new-game-btn">+ New Game</button>
+            <div class="new-game-container">
+                <button class="new-game-btn">+ New Game</button>
+                <span class="tagline">Start your next hit!</span>
+            </div>
         </div>
         <div class="game-grid" id="owned-game-grid">
             <!-- Your games appear here -->
@@ -235,7 +47,7 @@
     <div id="view-settings" class="main-content" style="display: none;">
         <h2>Settings</h2>
         <div style="background: var(--card-bg); padding: 30px; border-radius: 30px; border: 5px solid var(--border-color); max-width: 500px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <div class="toggle-row">
                 <span><strong>Dark Mode</strong></span>
                 <label class="switch">
                     <input type="checkbox" id="darkToggle" onclick="toggleDarkMode()">
@@ -263,81 +75,7 @@
 
     <!-- REAL LOGIC SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="module">
-        import { supabase } from './static/supabase.js';
-
-        // Initialize UI and check Auth
-        document.addEventListener('DOMContentLoaded', async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
-                window.location.href = 'index.html';
-                return;
-            }
-            
-            // Set welcome text
-            document.getElementById('welcome-text').innerText = `Welcome back, Player! ✨`;
-            
-            // Load test games
-            loadGames();
-        });
-
-        // Tab Switching
-        window.switchTab = (tabName) => {
-            closePanel();
-            ['view-home', 'view-create', 'view-settings'].forEach(id => document.getElementById(id).style.display = 'none');
-            ['nav-home', 'nav-create', 'nav-settings'].forEach(id => document.getElementById(id).classList.remove('active'));
-            document.getElementById('view-' + tabName).style.display = 'flex';
-            document.getElementById('nav-' + tabName).classList.add('active');
-        }
-
-        // Dark Mode Logic
-        window.toggleDarkMode = () => {
-            document.body.classList.toggle('dark-theme');
-            localStorage.setItem('bubbleTheme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
-        }
-
-        // Logout Logic
-        document.getElementById('logoutBtn').onclick = async () => {
-            if(confirm("Logout from Bubble Games?")) {
-                await supabase.auth.signOut();
-                window.location.href = 'index.html';
-            }
-        }
-
-        // Panel Magic
-        window.openPanel = (name, icon, desc) => {
-            document.getElementById('panelTitle').innerText = name;
-            document.getElementById('panelIcon').innerText = icon;
-            document.getElementById('panelDesc').innerText = desc;
-            document.getElementById('actionPanel').classList.add('open');
-        }
-
-        window.closePanel = () => {
-            document.getElementById('actionPanel').classList.remove('open');
-        }
-
-        // Load some demo games into your new grid!
-        function loadGames() {
-            const globalGrid = document.getElementById('global-game-grid');
-            const games = [
-                { name: 'Lostination', icon: '👻', desc: 'Survival horror in 3D!' },
-                { name: 'Climb It!', icon: '🏔️', desc: 'Physics-based mountain climbing.' },
-                { name: 'Geometry Dash', icon: '🟦', desc: 'Rhythm based platforming.' }
-            ];
-
-            globalGrid.innerHTML = games.map(g => `
-                <div class="market-card" onclick="openPanel('${g.name}', '${g.icon}', '${g.desc}')">
-                    <span class="market-icon">${g.icon}</span>
-                    <h3>${g.name}</h3>
-                </div>
-            `).join('');
-        }
-
-        // Apply saved theme
-        if (localStorage.getItem('bubbleTheme') === 'dark') {
-            document.body.classList.add('dark-theme');
-            document.getElementById('darkToggle').checked = true;
-        }
-    </script>
+    <!-- Linking your external JS brain -->
+    <script type="module" src="static/hub.js"></script>
 </body>
 </html>
