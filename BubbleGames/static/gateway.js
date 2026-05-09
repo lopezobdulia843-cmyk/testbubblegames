@@ -122,8 +122,7 @@ function resetButton(btn, ldr) {
 
 // 4. TELEPORT TO THE HUB! 🚀
 function showWelcome(user) {
-    // Instead of just hiding divs, we move to the new HTML file!
-    // We can also pass the username in the URL or just let hub.js fetch it
+    // Moves the player to the hub page!
     window.location.href = 'hub.html'; 
 }
 
