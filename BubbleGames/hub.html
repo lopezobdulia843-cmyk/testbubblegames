@@ -366,15 +366,21 @@
                 return;
             }
             
-            // Fixed Username Logic: Tries Username -> Full Name -> Email prefix
-            const userName = user.user_metadata.username || 
-                             user.user_metadata.full_name || 
-                             user.email.split('@')[0];
+          // 1. Get the logged-in user's basic info
+const { data: { user } } = await supabase.auth.getUser();
 
-            document.getElementById('welcome-text').innerText = `Welcome, ${userName}! ✨`;
-            
-            loadGames();
-        });
+// 2. Fetch the specific row from your 'profiles' table
+// We match the ID and just select the 'username' column
+const { data: profileData } = await supabase
+    .from('profiles')
+    .select('username')
+    .eq('id', user.id) // This matches their login ID to the table ID
+    .single();
+
+// 3. Use the username from the table, or fall back to email if the table is empty
+const displayUsername = profileData?.username || user.email.split('@')[0];
+
+document.getElementById('welcome-text').innerText = `Welcome, ${displayUsername}! ✨`;
 
         window.switchTab = (tabName) => {
             closePanel();
