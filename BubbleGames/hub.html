@@ -207,7 +207,7 @@
             color: var(--text-sub);
             display: flex;
             flex-direction: column;
-            justify-content: space-between; /* This keeps header top and play button bottom */
+            justify-content: space-between;
         }
 
         .slide-panel.open { bottom: 0; }
@@ -221,12 +221,12 @@
         #panelDesc {
             font-size: 18px;
             margin-top: 15px;
-            flex-grow: 1; /* Pushes everything below it down */
+            flex-grow: 1;
         }
 
         .play-btn-container {
             display: flex;
-            justify-content: flex-end; /* Keeps button on the right */
+            justify-content: flex-end;
             align-items: center;
         }
 
@@ -362,15 +362,15 @@
                 return;
             }
             
-           // THE FIX: Fetch specifically the 'username' column
+            // ATTEMPT DATABASE FETCH
             const { data: profile } = await supabase
                 .from('profiles')
                 .select('username')
                 .eq('id', user.id)
                 .single();
 
-           // Logic check: prioritize profile.username as a string
-            const displayName = (profile && profile.username) ? profile.username : user.email.split('@')[0];
+            // FORCE WORKAROUND: If Supabase fails due to quota, use the test name
+            const displayName = (profile && profile.username) ? profile.username : "TestingWithoutSupabase";
 
             document.getElementById('welcome-text').innerText = `Welcome, ${displayName}! ✨`;
             
