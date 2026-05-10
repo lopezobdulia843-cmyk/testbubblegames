@@ -53,7 +53,6 @@ window.handleAuth = async () => {
         mainButton.innerText = "CREATING PLAYER...";
 
         try {
-            // Check if username is taken in Firestore
             const q = query(collection(db, "profiles"), where("username", "==", username));
             const querySnapshot = await getDocs(q);
             
@@ -63,12 +62,10 @@ window.handleAuth = async () => {
                 return;
             }
 
-            // Create user in Firebase Auth (Using a fake email format like you had before)
             const userEmail = `${username}@bubblegames.com`;
             const userCredential = await createUserWithEmailAndPassword(auth, userEmail, password);
             const user = userCredential.user;
 
-            // Save the profile to Firestore
             await setDoc(doc(db, "profiles", user.uid), {
                 username: username,
                 createdAt: new Date()
@@ -99,22 +96,33 @@ function resetButton(btn, ldr) {
     ldr.style.display = 'none';
     btn.style.opacity = '1';
     btn.disabled = false;
-    btn.innerText = "Let's Play! 🫧"; 
+    btn.innerText = "🫧 Let's Play! 🫧"; 
 }
 
 // 4. TELEPORT TO THE HUB! 🚀
 function showWelcome() {
-    window.location.href = 'hub.html'; 
+    // Only redirect if we are NOT already on the hub page
+    if (!window.location.href.includes('hub.html')) {
+        window.location.href = 'hub.html'; 
+    }
 }
 
-// 5. AUTO-LOGIN CHECK
+// 5. AUTO-LOGIN CHECK (FIXED)
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        showWelcome();
+        // If they are logged in and on the login page, send them to the hub
+        if (window.location.href.includes('index.html') || window.location.pathname === '/') {
+            showWelcome();
+        }
+    } else {
+        // If they are NOT logged in and trying to see the hub, kick them to login
+        if (window.location.href.includes('hub.html')) {
+            window.location.href = 'index.html';
+        }
     }
 });
 
 window.handleLogout = async () => {
     await signOut(auth);
-    window.location.reload(); 
+    window.location.href = 'index.html'; 
 };
