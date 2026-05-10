@@ -101,8 +101,6 @@
             transition: 0.3s;
         }
 
-        .hero-search:focus { border-color: #4f46e5; transform: scale(1.01); }
-
         /* GAME CARDS */
         .game-grid {
             display: grid;
@@ -125,26 +123,7 @@
         .market-card:hover { transform: translateY(-10px); border-color: var(--text-main); box-shadow: 0 15px 30px var(--shadow); }
         .market-icon { font-size: 55px; display: block; margin-bottom: 10px; }
 
-        .edit-badge {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: #4f46e5;
-            color: white;
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 11px;
-            font-weight: bold;
-        }
-
         /* JUICY NEW GAME BUTTON */
-        .new-game-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-        }
-
         .new-game-btn {
             background: var(--juicy-gradient);
             color: white;
@@ -155,43 +134,11 @@
             font-weight: 900;
             font-size: 20px;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            position: relative;
-            overflow: hidden;
             box-shadow: 0 8px 0 #3730a3, 0 15px 25px var(--bubble-glow);
-            transition: 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             animation: float 3s ease-in-out infinite;
         }
 
-        .new-game-btn::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
-            animation: shine 4s infinite;
-        }
-
-        .new-game-btn:hover {
-            transform: scale(1.1) translateY(-5px);
-            box-shadow: 0 12px 0 #3730a3, 0 20px 35px var(--bubble-glow);
-        }
-
-        .new-game-btn:active {
-            transform: translateY(6px) scale(0.95);
-            box-shadow: 0 2px 0 #3730a3;
-        }
-
-        .tagline {
-            font-size: 14px;
-            font-weight: bold;
-            color: #ec4899;
-            font-style: italic;
-            opacity: 0.8;
-            text-shadow: 0 0 10px var(--bubble-glow);
-        }
-
-        /* JUICY SLIDE PANEL */
+        /* SLIDE PANEL - FIXED BUTTON POSITION */
         .slide-panel {
             position: fixed;
             bottom: -100%;
@@ -199,74 +146,57 @@
             right: 0;
             background: var(--card-bg);
             border-top: 8px solid var(--text-main);
-            padding: 40px;
-            height: 45%;
+            padding: 30px 40px;
+            height: 400px;
             transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1);
             z-index: 100;
             box-shadow: 0 -20px 50px rgba(0,0,0,0.2);
             color: var(--text-sub);
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
         }
 
         .slide-panel.open { bottom: 0; }
 
+        .panel-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            justify-content: space-between;
+        }
+
+        .panel-info {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .panel-desc {
+            font-size: 18px;
+            line-height: 1.5;
+            margin: 15px 0;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
         .play-btn {
             background: var(--juicy-gradient);
             color: white;
-            padding: 25px 60px;
+            padding: 20px 0;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto 20px auto;
             border-radius: 60px;
             border: none;
-            font-size: 32px;
+            font-size: 28px;
             font-weight: 800;
             cursor: pointer;
             box-shadow: 0 10px 0 #3730a3, 0 15px 30px rgba(236, 72, 153, 0.4);
             transition: 0.1s;
             text-transform: uppercase;
-            letter-spacing: 2px;
         }
 
         .play-btn:active { transform: translateY(8px); box-shadow: 0 2px 0 #3730a3; }
 
-        /* LOGOUT BUTTON */
-        .logout-btn {
-            background: var(--card-bg);
-            color: #ef4444;
-            border: 3px solid #fee2e2;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: 0.2s;
-            box-shadow: 0 4px 10px var(--shadow);
-            margin-top: 20px;
-            width: fit-content;
-        }
-
-        .logout-btn:hover {
-            background: #ef4444;
-            color: white;
-            transform: scale(1.05);
-            border-color: #ef4444;
-        }
-
-        /* ANIMATIONS */
-        @keyframes shine { 0% { left: -100%; } 20% { left: 100%; } 100% { left: 100%; } }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-
-        /* TOGGLES */
-        .toggle-row { display: flex; justify-content: space-between; align-items: center; width: 300px; }
-        .switch { position: relative; display: inline-block; width: 60px; height: 34px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: #ec4899; }
-        input:checked + .slider:before { transform: translateX(26px); }
-
     </style>
 </head>
 <body>
@@ -277,7 +207,6 @@
         <div id="nav-settings" class="side-icon" onclick="switchTab('settings')">⚙️</div>
     </div>
 
-    <!-- DISCOVER TAB -->
     <div id="view-home" class="main-content">
         <div style="text-align: center;">
             <h2 id="welcome-text">Discover Games</h2>
@@ -289,47 +218,35 @@
         <div class="game-grid" id="global-game-grid"></div>
     </div>
 
-    <!-- CREATE TAB -->
     <div id="view-create" class="main-content" style="display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h2>Your Creations</h2>
-            <div class="new-game-container">
-                <button class="new-game-btn">+ New Game</button>
-                <span class="tagline">Let your imagination flow with the Bubbles! ✨</span>
-            </div>
+            <button class="new-game-btn">+ New Game</button>
         </div>
         <div class="game-grid" id="owned-game-grid"></div>
     </div>
 
-    <!-- SETTINGS TAB -->
     <div id="view-settings" class="main-content" style="display: none;">
         <h2>Settings</h2>
-        <div style="background: var(--card-bg); padding: 30px; border-radius: 30px; border: 5px solid var(--border-color); max-width: 500px;">
-            <div class="toggle-row">
-                <span><strong>Dark Mode</strong></span>
-                <label class="switch">
-                    <input type="checkbox" id="darkToggle" onclick="toggleDarkMode()">
-                    <span class="slider"></span>
-                </label>
-            </div>
-            <button class="logout-btn" id="logoutBtn">
-                <span>🚪</span> Log Out
-            </button>
-        </div>
+        <button id="logoutBtn" style="padding: 10px 20px; cursor:pointer;">Log Out</button>
     </div>
 
     <!-- SLIDE PANEL -->
     <div id="actionPanel" class="slide-panel">
-        <div style="display: flex; justify-content: space-between;">
-            <div style="display: flex; gap: 20px; align-items: center;">
-                <span id="panelIcon" style="font-size: 60px;">🎮</span>
-                <h2 id="panelTitle" style="margin: 0;">Game Title</h2>
+        <div class="panel-container">
+            <div class="panel-info">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; gap: 20px; align-items: center;">
+                        <span id="panelIcon" style="font-size: 50px;">🎮</span>
+                        <h2 id="panelTitle" style="margin: 0;">Game Title</h2>
+                    </div>
+                    <button onclick="closePanel()" style="cursor:pointer; background:none; border:none; font-size:32px; color: var(--text-sub);">✕</button>
+                </div>
+                <p id="panelDesc" class="panel-desc">Description text...</p>
             </div>
-            <button onclick="closePanel()" style="cursor:pointer; background:none; border:none; font-size:24px; color: var(--text-sub);">✕</button>
-        </div>
-        <div style="display: flex; gap: 40px; align-items: center; height: 100%;">
-             <p id="panelDesc">Game description goes here...</p>
-             <button class="play-btn">Play Now</button>
+            
+            <!-- Play button stays at the bottom of the container -->
+            <button class="play-btn">Play Now</button>
         </div>
     </div>
 
@@ -344,9 +261,12 @@
                 return;
             }
             
-            // Welcome [USER] Logic
-            const userName = user.user_metadata.full_name || user.email.split('@')[0];
-            document.getElementById('welcome-text').innerText = `Welcome, ${userName}! ✨`;
+            // Fixed Username Logic: Tries Username -> Full Name -> Email prefix
+            const profileName = user.user_metadata.username || 
+                                user.user_metadata.full_name || 
+                                user.email.split('@')[0];
+
+            document.getElementById('welcome-text').innerText = `Welcome, ${profileName}! ✨`;
             
             loadGames();
         });
@@ -354,21 +274,7 @@
         window.switchTab = (tabName) => {
             closePanel();
             ['view-home', 'view-create', 'view-settings'].forEach(id => document.getElementById(id).style.display = 'none');
-            ['nav-home', 'nav-create', 'nav-settings'].forEach(id => document.getElementById(id).classList.remove('active'));
             document.getElementById('view-' + tabName).style.display = 'flex';
-            document.getElementById('nav-' + tabName).classList.add('active');
-        }
-
-        window.toggleDarkMode = () => {
-            document.body.classList.toggle('dark-theme');
-            localStorage.setItem('bubbleTheme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
-        }
-
-        document.getElementById('logoutBtn').onclick = async () => {
-            if(confirm("Logout from Bubble Games?")) {
-                await supabase.auth.signOut();
-                window.location.href = 'index.html';
-            }
         }
 
         window.openPanel = (name, icon, desc) => {
@@ -384,17 +290,10 @@
 
         function loadGames() {
             const globalGrid = document.getElementById('global-game-grid');
-            const ownedGrid = document.getElementById('owned-game-grid');
-
             const games = [
-                { name: 'Lostination', icon: '👻', desc: 'Survival horror in 3D!' },
-                { name: 'Climb It!', icon: '🏔️', desc: 'Physics-based mountain climbing.' },
-                { name: 'Geometry Dash', icon: '🟦', desc: 'Rhythm based platforming.' }
-            ];
-
-            const creations = [
-                { name: 'Bubble Craft', icon: '🫧', desc: 'The ultimate bubble world.' },
-                { name: 'Arti Abe AI', icon: '🤖', desc: 'Your smart robot pal.' }
+                { name: 'Lostination', icon: '👻', desc: 'A scary 3D survival experience where you explore the unknown!' },
+                { name: 'Climb It!', icon: '🏔️', desc: 'Use physics to reach the top. It is harder than it looks!' },
+                { name: 'Geometry Dash', icon: '🟦', desc: 'Jump and fly through danger in this rhythm-based platformer.' }
             ];
 
             globalGrid.innerHTML = games.map(g => `
@@ -403,19 +302,6 @@
                     <h3>${g.name}</h3>
                 </div>
             `).join('');
-
-            ownedGrid.innerHTML = creations.map(g => `
-                <div class="market-card" onclick="openPanel('${g.name}', '${g.icon}', '${g.desc}')">
-                    <span class="edit-badge">OWNED</span>
-                    <span class="market-icon">${g.icon}</span>
-                    <h3>${g.name}</h3>
-                </div>
-            `).join('');
-        }
-
-        if (localStorage.getItem('bubbleTheme') === 'dark') {
-            document.body.classList.add('dark-theme');
-            document.getElementById('darkToggle').checked = true;
         }
     </script>
 </body>
