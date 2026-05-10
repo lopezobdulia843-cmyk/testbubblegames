@@ -5,23 +5,31 @@ import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-
 // --- 1. ONLY SHOW DATA (NO KICKING) ---
 onAuthStateChanged(auth, async (user) => {
     if (user) {
-        // Function to fetch the name with a retry if it's a brand new account
+        const welcomeText = document.getElementById('welcome-text');
+        
+        // Instant Fallback: Use the name from the email (e.g., Abraham) while we wait for Firestore
+        const emailPrefix = user.email ? user.email.split('@')[0] : "Player";
+        if (welcomeText) welcomeText.innerText = `Welcome back, ${emailPrefix}! ✨`;
+
+        // Function to fetch the actual Firestore username
         const getUsername = async (uid, attempts = 0) => {
-            const docRef = doc(db, "profiles", uid);
-            const docSnap = await getDoc(docRef);
-            
-            if (docSnap.exists()) {
-                return docSnap.data().username;
-            } else if (attempts < 3) {
-                // Wait 1 second and try again (up to 3 times) for brand new signups
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                return getUsername(uid, attempts + 1);
+            try {
+                const docRef = doc(db, "profiles", uid);
+                const docSnap = await getDoc(docRef);
+                
+                if (docSnap.exists()) {
+                    return docSnap.data().username;
+                } else if (attempts < 3) {
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    return getUsername(uid, attempts + 1);
+                }
+            } catch (err) {
+                console.error("Firestore lookup failed:", err);
             }
-            return "Player";
+            return emailPrefix; // Use email prefix instead of "Player" if Firestore fails
         };
 
         const displayName = await getUsername(user.uid);
-        const welcomeText = document.getElementById('welcome-text');
         if (welcomeText) welcomeText.innerText = `Welcome back, ${displayName}! ✨`;
         
         loadGlobalGames();
