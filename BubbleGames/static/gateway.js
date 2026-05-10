@@ -1,9 +1,11 @@
-import { supabase } from './supabase.js';
+import { auth, db } from './firebase-config.js';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { doc, setDoc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // 1. SET DEFAULT MODE
 window.mode = "login"; 
 
-// 2. TOGGLE BETWEEN SIGNUP AND LOGIN (NOW WITH MORE HYPE!)
+// 2. TOGGLE BETWEEN SIGNUP AND LOGIN
 window.switchMode = () => {
     const title = document.getElementById('page-title');
     const btn = document.getElementById('main-button');
@@ -13,8 +15,8 @@ window.switchMode = () => {
     if (window.mode === "login") {
         window.mode = "signup";
         title.innerText = "Join the Club! ✨";
-        btn.innerText = "🫧 Let's Play! 🫧"; // Keeping it fun!
-        if (forgotPass) forgotPass.style.display = 'none'; // Bye bye link!
+        btn.innerText = "🫧 Let's Play! 🫧";
+        if (forgotPass) forgotPass.style.display = 'none';
         toggleContainer.innerHTML = `
             Already a Member? 
             <a href="#" class="signup-link" onclick="switchMode()">Log In!</a>
@@ -23,7 +25,7 @@ window.switchMode = () => {
         window.mode = "login";
         title.innerText = "Getting Started";
         btn.innerText = "🫧 Let's Play! 🫧";
-        if (forgotPass) forgotPass.style.display = 'inline'; // Welcome back link!
+        if (forgotPass) forgotPass.style.display = 'inline';
         toggleContainer.innerHTML = `
             New here? 
             <a href="#" class="signup-link" onclick="switchMode()">Sign Up!</a>
@@ -33,7 +35,7 @@ window.switchMode = () => {
 
 // 3. HANDLE AUTHENTICATION
 window.handleAuth = async () => {
-    const username = document.getElementById('username').value;
+    const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value;
     const mainButton = document.getElementById('main-button');
     const loader = document.getElementById('loader');
@@ -43,17 +45,6 @@ window.handleAuth = async () => {
         return;
     }
 
-    if (window.mode === "signup") {
-        if (password.includes(" ") || username.includes(" ")) {
-            alert("No spaces allowed! 🫧");
-            return;
-        }
-        if (password.length < 6) {
-            alert("Password must be at least 6 characters! 🛡️");
-            return;
-        }
-    }
-
     loader.style.display = 'block';
     mainButton.style.opacity = '0.5'; 
     mainButton.disabled = true;
@@ -61,53 +52,44 @@ window.handleAuth = async () => {
     if (window.mode === "signup") {
         mainButton.innerText = "CREATING PLAYER...";
 
-        const { data: newUser, error: profileError } = await supabase
-            .from('profiles')
-            .insert([{ username: username }])
-            .select('id')
-            .single();
+        try {
+            // Check if username is taken in Firestore
+            const q = query(collection(db, "profiles"), where("username", "==", username));
+            const querySnapshot = await getDocs(q);
+            
+            if (!querySnapshot.empty) {
+                alert("That username is already taken! 🫧");
+                resetButton(mainButton, loader);
+                return;
+            }
 
-        if (profileError) {
-            alert("That username is already taken! 🫧");
+            // Create user in Firebase Auth (Using a fake email format like you had before)
+            const userEmail = `${username}@bubblegames.com`;
+            const userCredential = await createUserWithEmailAndPassword(auth, userEmail, password);
+            const user = userCredential.user;
+
+            // Save the profile to Firestore
+            await setDoc(doc(db, "profiles", user.uid), {
+                username: username,
+                createdAt: new Date()
+            });
+
+            showWelcome();
+
+        } catch (error) {
+            alert("Error: " + error.message);
             resetButton(mainButton, loader);
-            return;
-        }
-
-        const { error: authError } = await supabase.auth.signUp({
-            email: `${newUser.id}@bubblegames.com`,
-            password: password,
-        });
-
-        if (authError) {
-            alert("Auth error! Try again. 🎈");
-            resetButton(mainButton, loader);
-        } else {
-            showWelcome(username);
         }
 
     } else {
         mainButton.innerText = "LOADING PROFILE...";
         
-        const { data: profile, error: searchError } = await supabase
-            .from('profiles')
-            .select('id')
-            .eq('username', username)
-            .single();
-
-        if (profile) {
-            const { error: loginError } = await supabase.auth.signInWithPassword({
-                email: `${profile.id}@bubblegames.com`,
-                password: password,
-            });
-
-            if (!loginError) {
-                showWelcome(username);
-            } else {
-                alert("Wrong password! 🔑");
-                resetButton(mainButton, loader);
-            }
-        } else {
-            alert("Player not found! ✨");
+        try {
+            const userEmail = `${username}@bubblegames.com`;
+            await signInWithEmailAndPassword(auth, userEmail, password);
+            showWelcome();
+        } catch (error) {
+            alert("Wrong password or player not found! 🔑");
             resetButton(mainButton, loader);
         }
     }
@@ -117,33 +99,22 @@ function resetButton(btn, ldr) {
     ldr.style.display = 'none';
     btn.style.opacity = '1';
     btn.disabled = false;
-    btn.innerText = "Let's Play! 🫧"; // Always stay fun!
+    btn.innerText = "Let's Play! 🫧"; 
 }
 
 // 4. TELEPORT TO THE HUB! 🚀
-function showWelcome(user) {
-    // Moves the player to the hub page!
+function showWelcome() {
     window.location.href = 'hub.html'; 
 }
 
 // 5. AUTO-LOGIN CHECK
-const checkSession = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+onAuthStateChanged(auth, (user) => {
     if (user) {
-        const playerID = user.email.split('@')[0];
-        const { data: profile } = await supabase
-            .from('profiles')
-            .select('username')
-            .eq('id', playerID)
-            .single();
-
-        if (profile) showWelcome(profile.username);
+        showWelcome();
     }
-};
-
-checkSession();
+});
 
 window.handleLogout = async () => {
-    await supabase.auth.signOut();
+    await signOut(auth);
     window.location.reload(); 
 };
