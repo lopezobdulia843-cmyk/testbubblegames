@@ -6,10 +6,8 @@ import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-
 function checkUser() {
     // Firebase listens for the user automatically
     onAuthStateChanged(auth, async (user) => {
-        if (!user) {
-            // Not logged in? Kick them to the curb!
-            window.location.href = 'index.html';
-        } else {
+        // FIXED: Only kick them if Firebase has finished loading and NO user is found
+        if (user) {
             // Logged in! Let's get their real Username from Firestore
             const docRef = doc(db, "profiles", user.uid);
             const docSnap = await getDoc(docRef);
@@ -26,11 +24,14 @@ function checkUser() {
             // Load the games
             loadGlobalGames();
             loadUserGames(user.uid);
+        } else {
+            // No user found after the check? NOW we kick them.
+            window.location.replace('index.html');
         }
     });
 }
 
-// --- 2. THE TAB MANAGER (Stays exactly the same!) ---
+// --- 2. THE TAB MANAGER ---
 window.switchTab = (tabName) => {
     closePanel();
     const views = ['view-home', 'view-create', 'view-settings'];
@@ -45,15 +46,17 @@ window.switchTab = (tabName) => {
         if (el) el.classList.remove('active');
     });
 
-    document.getElementById(`view-${tabName}`).style.display = 'flex';
-    document.getElementById(`nav-${tabName}`).classList.add('active');
+    const targetView = document.getElementById(`view-${tabName}`);
+    const targetNav = document.getElementById(`nav-${tabName}`);
+    if (targetView) targetView.style.display = 'flex';
+    if (targetNav) targetNav.classList.add('active');
 };
 
 // --- 3. THE DATA FETCHERS ---
 async function loadGlobalGames() {
     const globalGrid = document.getElementById('global-game-grid');
+    if (!globalGrid) return;
     
-    // Your list of epic games
     const games = [
         { name: 'Lostination', icon: '👻', desc: 'A terrifying 3D survival experience built with Three.js.' },
         { name: 'Bubble Craft', icon: '💎', desc: 'The ultimate block-building adventure.' },
@@ -65,7 +68,7 @@ async function loadGlobalGames() {
 
 async function loadUserGames(userId) {
     const ownedGrid = document.getElementById('owned-game-grid');
-    // For now, a placeholder until we build the "Create" logic
+    if (!ownedGrid) return;
     ownedGrid.innerHTML = `<p style="color: gray;">You haven't published any games yet. Click "New Game" to start!</p>`;
 }
 
@@ -87,7 +90,8 @@ window.openPanel = (name, icon, desc) => {
 };
 
 window.closePanel = () => {
-    document.getElementById('actionPanel').classList.remove('open');
+    const panel = document.getElementById('actionPanel');
+    if (panel) panel.classList.remove('open');
 };
 
 window.toggleDarkMode = () => {
@@ -101,7 +105,7 @@ if (logoutBtn) {
     logoutBtn.onclick = async () => {
         try {
             await signOut(auth);
-            window.location.href = 'index.html';
+            window.location.replace('index.html');
         } catch (error) {
             alert("Error logging out!");
         }
