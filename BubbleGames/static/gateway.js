@@ -12,7 +12,7 @@ window.switchMode = () => {
     const toggleContainer = document.getElementById('toggle-container');
     const forgotPass = document.getElementById('forgot-pass');
 
-    if (!title || !btn) return; // Safety check
+    if (!title || !btn) return; 
 
     if (window.mode === "login") {
         window.mode = "signup";
@@ -57,11 +57,11 @@ window.handleAuth = async () => {
                 return;
             }
             const userCredential = await createUserWithEmailAndPassword(auth, userEmail, password);
+            // THIS PART SAVES THE NAME - KEEPING IT EXACTLY THE SAME
             await setDoc(doc(db, "profiles", userCredential.user.uid), {
                 username: username,
                 createdAt: new Date()
             });
-            // Don't manually redirect here, let the Auth listener (below) do it safely
         } catch (error) {
             alert("Error: " + error.message);
             resetButton(mainButton, loader);
@@ -81,22 +81,23 @@ function resetButton(btn, ldr) {
     if (btn) {
         btn.style.opacity = '1';
         btn.disabled = false;
-        btn.innerText = "Let's Play! 🫧"; 
+        btn.innerText = "🫧 Let's Play! 🫧"; 
     }
 }
 
-// 4. THE BOUNCER (The Fix for the Kicking)
+// 4. THE BOUNCER
 onAuthStateChanged(auth, (user) => {
     const isLoginPage = window.location.pathname.includes('index.html') || window.location.pathname === '/';
     const isHubPage = window.location.pathname.includes('hub.html');
 
     if (user) {
-        // We found a player! Only send them to the hub if they are stuck on the login page
         if (isLoginPage) {
-            window.location.replace('hub.html'); 
+            // Added a tiny delay to make sure the Firestore write finishes before moving
+            setTimeout(() => {
+                window.location.replace('hub.html'); 
+            }, 500);
         }
     } else {
-        // No player found. Only kick them to login if they are trying to stay on the hub
         if (isHubPage) {
             window.location.replace('index.html');
         }
