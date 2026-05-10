@@ -5,10 +5,22 @@ import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-
 // --- 1. ONLY SHOW DATA (NO KICKING) ---
 onAuthStateChanged(auth, async (user) => {
     if (user) {
-        const docRef = doc(db, "profiles", user.uid);
-        const docSnap = await getDoc(docRef);
-        let displayName = docSnap.exists() ? docSnap.data().username : "Player";
+        // Function to fetch the name with a retry if it's a brand new account
+        const getUsername = async (uid, attempts = 0) => {
+            const docRef = doc(db, "profiles", uid);
+            const docSnap = await getDoc(docRef);
+            
+            if (docSnap.exists()) {
+                return docSnap.data().username;
+            } else if (attempts < 3) {
+                // Wait 1 second and try again (up to 3 times) for brand new signups
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                return getUsername(uid, attempts + 1);
+            }
+            return "Player";
+        };
 
+        const displayName = await getUsername(user.uid);
         const welcomeText = document.getElementById('welcome-text');
         if (welcomeText) welcomeText.innerText = `Welcome back, ${displayName}! ✨`;
         
@@ -71,12 +83,10 @@ window.handleLogout = async () => {
 
 // --- 4. TABS & PANELS ---
 window.switchTab = (t) => {
-    // Switch views
     const v = ['view-home', 'view-create', 'view-settings'];
     v.forEach(id => { if(document.getElementById(id)) document.getElementById(id).style.display = 'none'; });
     if(document.getElementById(`view-${t}`)) document.getElementById(`view-${t}`).style.display = 'flex';
 
-    // Update Sidebar Blue Glow
     const icons = ['nav-home', 'nav-create', 'nav-settings'];
     icons.forEach(id => { if(document.getElementById(id)) document.getElementById(id).classList.remove('active'); });
     if(document.getElementById(`nav-${t}`)) document.getElementById(`nav-${t}`).classList.add('active');
