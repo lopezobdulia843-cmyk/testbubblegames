@@ -362,17 +362,16 @@
                 return;
             }
             
-           // 1. Fetch only the username column from the profiles table
-            const { data: profile, error } = await supabase
+           // THE FIX: Fetch specifically the 'username' column
+            const { data: profile } = await supabase
                 .from('profiles')
                 .select('username')
                 .eq('id', user.id)
                 .single();
 
-            // 2. Extract the string, or use the email prefix as a backup
-            const displayName = profile?.username || user.email.split('@')[0];
+           // Logic check: prioritize profile.username as a string
+            const displayName = (profile && profile.username) ? profile.username : user.email.split('@')[0];
 
-            // 3. Update the text
             document.getElementById('welcome-text').innerText = `Welcome, ${displayName}! ✨`;
             
             loadGames();
