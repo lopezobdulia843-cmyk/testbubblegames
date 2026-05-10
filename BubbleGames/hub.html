@@ -351,34 +351,11 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="module">
-        import { supabase } from './static/supabase.js';
-
-        document.addEventListener('DOMContentLoaded', async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
-                window.location.href = 'index.html';
-                return;
-            }
-            
-            // FETCH USERNAME FROM DATABASE
-            const { data: profile } = await supabase
-                .from('profiles')
-                .select('username')
-                .eq('id', user.id)
-                .single();
-
-            // Logic: Use username from DB, fallback to email prefix if DB fails/is empty
-            const displayName = (profile && profile.username) ? profile.username : user.email.split('@')[0];
-
-            document.getElementById('welcome-text').innerText = `Welcome, ${displayName}! ✨`;
-            
-            loadGames();
-        });
-
+    <script type="module" src="hub.js"></script>
+    <script>
+        // UI Helpers kept local for speed
         window.switchTab = (tabName) => {
-            closePanel();
+            if (window.closePanel) window.closePanel();
             ['view-home', 'view-create', 'view-settings'].forEach(id => document.getElementById(id).style.display = 'none');
             ['nav-home', 'nav-create', 'nav-settings'].forEach(id => document.getElementById(id).classList.remove('active'));
             document.getElementById('view-' + tabName).style.display = 'flex';
@@ -390,13 +367,6 @@
             localStorage.setItem('bubbleTheme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
         }
 
-        document.getElementById('logoutBtn').onclick = async () => {
-            if(confirm("Logout from Bubble Games?")) {
-                await supabase.auth.signOut();
-                window.location.href = 'index.html';
-            }
-        }
-
         window.openPanel = (name, icon, desc) => {
             document.getElementById('panelTitle').innerText = name;
             document.getElementById('panelIcon').innerText = icon;
@@ -406,37 +376,6 @@
 
         window.closePanel = () => {
             document.getElementById('actionPanel').classList.remove('open');
-        }
-
-        function loadGames() {
-            const globalGrid = document.getElementById('global-game-grid');
-            const ownedGrid = document.getElementById('owned-game-grid');
-
-            const games = [
-                { name: 'Lostination', icon: '👻', desc: 'Survival horror in 3D! Can you escape the bubbles?' },
-                { name: 'Climb It!', icon: '🏔️', desc: 'Physics-based mountain climbing. Don\'t fall off!' },
-                { name: 'Geometry Dash', icon: '🟦', desc: 'Rhythm based platforming. Jump over the spikes!' }
-            ];
-
-            const creations = [
-                { name: 'Bubble Craft', icon: '🫧', desc: 'The ultimate bubble world.' },
-                { name: 'Arti Abe AI', icon: '🤖', desc: 'Your smart robot pal.' }
-            ];
-
-            globalGrid.innerHTML = games.map(g => `
-                <div class="market-card" onclick="openPanel('${g.name}', '${g.icon}', '${g.desc}')">
-                    <span class="market-icon">${g.icon}</span>
-                    <h3>${g.name}</h3>
-                </div>
-            `).join('');
-
-            ownedGrid.innerHTML = creations.map(g => `
-                <div class="market-card" onclick="openPanel('${g.name}', '${g.icon}', '${g.desc}')">
-                    <span class="edit-badge">OWNED</span>
-                    <span class="market-icon">${g.icon}</span>
-                    <h3>${g.name}</h3>
-                </div>
-            `).join('');
         }
 
         if (localStorage.getItem('bubbleTheme') === 'dark') {
