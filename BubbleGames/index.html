@@ -1,3 +1,11 @@
+// Add this at the top of your script to clear the "ghost" sessions
+if (!localStorage.getItem('firebase_migration_v1')) {
+    localStorage.clear(); // Wipes all old Supabase keys
+    sessionStorage.clear();
+    localStorage.setItem('firebase_migration_v1', 'true'); // Prevents infinite clearing
+    window.location.reload(); // Refresh once to start clean
+}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
