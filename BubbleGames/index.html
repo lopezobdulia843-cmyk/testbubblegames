@@ -6,10 +6,11 @@
     <title>Bubble Games | Welcome</title>
 
     <script>
-        if (!localStorage.getItem('firebase_migration_v1')) {
+        // FORCED RESET: Clears the "ghosts" once and then marks it as clean
+        if (!localStorage.getItem('ghosts_cleared_v2')) {
             localStorage.clear();
             sessionStorage.clear();
-            localStorage.setItem('firebase_migration_v1', 'true');
+            localStorage.setItem('ghosts_cleared_v2', 'true');
             window.location.reload(); 
         }
     </script>
