@@ -295,7 +295,6 @@
         <div id="nav-settings" class="side-icon" onclick="switchTab('settings')">⚙️</div>
     </div>
 
-    <!-- DISCOVER TAB -->
     <div id="view-home" class="main-content">
         <div style="text-align: center;">
             <h2 id="welcome-text">Discover Games</h2>
@@ -307,7 +306,6 @@
         <div class="game-grid" id="global-game-grid"></div>
     </div>
 
-    <!-- CREATE TAB -->
     <div id="view-create" class="main-content" style="display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h2>Your Creations</h2>
@@ -319,7 +317,6 @@
         <div class="game-grid" id="owned-game-grid"></div>
     </div>
 
-    <!-- SETTINGS TAB -->
     <div id="view-settings" class="main-content" style="display: none;">
         <h2>Settings</h2>
         <div style="background: var(--card-bg); padding: 30px; border-radius: 30px; border: 5px solid var(--border-color); max-width: 500px;">
@@ -336,7 +333,6 @@
         </div>
     </div>
 
-    <!-- SLIDE PANEL -->
     <div id="actionPanel" class="slide-panel">
         <div class="panel-content">
             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -366,10 +362,9 @@
                 return;
             }
             
-            // Fixed Username Logic: Tries Username -> Full Name -> Email prefix
-            const userName = user.user_metadata.username || 
-                             user.user_metadata.full_name || 
-                             user.email.split('@')[0];
+            // Fixed Username Logic: Fetches from the 'profiles' table first
+            const { data: profile } = await supabase.from('profiles').select('username').eq('id', user.id).single();
+            const userName = profile?.username || user.user_metadata.full_name || user.email.split('@')[0];
 
             document.getElementById('welcome-text').innerText = `Welcome, ${userName}! ✨`;
             
