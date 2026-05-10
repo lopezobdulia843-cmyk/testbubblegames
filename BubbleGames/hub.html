@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bubble Games | The Hub</title>
-    <!-- We keep your exact CSS here -->
     <style>
         :root {
             --bg-color: #f0f4ff;
@@ -99,7 +98,10 @@
             background: var(--card-bg);
             color: var(--text-sub);
             outline: none;
+            transition: 0.3s;
         }
+
+        .hero-search:focus { border-color: #4f46e5; transform: scale(1.01); }
 
         /* GAME CARDS */
         .game-grid {
@@ -114,13 +116,13 @@
             padding: 30px;
             border: 6px solid var(--border-color);
             text-align: center;
-            transition: 0.3s;
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             cursor: pointer;
             color: var(--text-sub);
             position: relative;
         }
 
-        .market-card:hover { transform: translateY(-10px); border-color: var(--text-main); }
+        .market-card:hover { transform: translateY(-10px); border-color: var(--text-main); box-shadow: 0 15px 30px var(--shadow); }
         .market-icon { font-size: 55px; display: block; margin-bottom: 10px; }
 
         .edit-badge {
@@ -132,9 +134,17 @@
             padding: 5px 12px;
             border-radius: 15px;
             font-size: 11px;
+            font-weight: bold;
         }
 
-        /* NEW GAME BUTTON */
+        /* JUICY NEW GAME BUTTON */
+        .new-game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
         .new-game-btn {
             background: var(--juicy-gradient);
             color: white;
@@ -145,11 +155,43 @@
             font-weight: 900;
             font-size: 20px;
             text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
             box-shadow: 0 8px 0 #3730a3, 0 15px 25px var(--bubble-glow);
-            transition: 0.2s;
+            transition: 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: float 3s ease-in-out infinite;
         }
 
-        /* SLIDE PANEL */
+        .new-game-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shine 4s infinite;
+        }
+
+        .new-game-btn:hover {
+            transform: scale(1.1) translateY(-5px);
+            box-shadow: 0 12px 0 #3730a3, 0 20px 35px var(--bubble-glow);
+        }
+
+        .new-game-btn:active {
+            transform: translateY(6px) scale(0.95);
+            box-shadow: 0 2px 0 #3730a3;
+        }
+
+        .tagline {
+            font-size: 14px;
+            font-weight: bold;
+            color: #ec4899;
+            font-style: italic;
+            opacity: 0.8;
+            text-shadow: 0 0 10px var(--bubble-glow);
+        }
+
+        /* JUICY SLIDE PANEL */
         .slide-panel {
             position: fixed;
             bottom: -100%;
@@ -163,6 +205,9 @@
             z-index: 100;
             box-shadow: 0 -20px 50px rgba(0,0,0,0.2);
             color: var(--text-sub);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
         .slide-panel.open { bottom: 0; }
@@ -177,8 +222,14 @@
             font-weight: 800;
             cursor: pointer;
             box-shadow: 0 10px 0 #3730a3, 0 15px 30px rgba(236, 72, 153, 0.4);
+            transition: 0.1s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
+        .play-btn:active { transform: translateY(8px); box-shadow: 0 2px 0 #3730a3; }
+
+        /* LOGOUT BUTTON */
         .logout-btn {
             background: var(--card-bg);
             color: #ef4444;
@@ -187,15 +238,35 @@
             border-radius: 20px;
             font-weight: bold;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+            box-shadow: 0 4px 10px var(--shadow);
             margin-top: 20px;
+            width: fit-content;
         }
 
+        .logout-btn:hover {
+            background: #ef4444;
+            color: white;
+            transform: scale(1.05);
+            border-color: #ef4444;
+        }
+
+        /* ANIMATIONS */
+        @keyframes shine { 0% { left: -100%; } 20% { left: 100%; } 100% { left: 100%; } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+        /* TOGGLES */
+        .toggle-row { display: flex; justify-content: space-between; align-items: center; width: 300px; }
         .switch { position: relative; display: inline-block; width: 60px; height: 34px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
         .slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: #ec4899; }
         input:checked + .slider:before { transform: translateX(26px); }
+
     </style>
 </head>
 <body>
@@ -215,34 +286,35 @@
                 <input type="text" class="hero-search" placeholder="Search all bubble games...">
             </div>
         </div>
-        <div class="game-grid" id="global-game-grid">
-            <!-- Games like Lostination appear here -->
-        </div>
+        <div class="game-grid" id="global-game-grid"></div>
     </div>
 
     <!-- CREATE TAB -->
     <div id="view-create" class="main-content" style="display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h2>Your Creations</h2>
-            <button class="new-game-btn">+ New Game</button>
+            <div class="new-game-container">
+                <button class="new-game-btn">+ New Game</button>
+                <span class="tagline">Let your imagination flow with the Bubbles! ✨</span>
+            </div>
         </div>
-        <div class="game-grid" id="owned-game-grid">
-            <!-- Your games appear here -->
-        </div>
+        <div class="game-grid" id="owned-game-grid"></div>
     </div>
 
     <!-- SETTINGS TAB -->
     <div id="view-settings" class="main-content" style="display: none;">
         <h2>Settings</h2>
         <div style="background: var(--card-bg); padding: 30px; border-radius: 30px; border: 5px solid var(--border-color); max-width: 500px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <div class="toggle-row">
                 <span><strong>Dark Mode</strong></span>
                 <label class="switch">
                     <input type="checkbox" id="darkToggle" onclick="toggleDarkMode()">
                     <span class="slider"></span>
                 </label>
             </div>
-            <button class="logout-btn" id="logoutBtn">🚪 Log Out</button>
+            <button class="logout-btn" id="logoutBtn">
+                <span>🚪</span> Log Out
+            </button>
         </div>
     </div>
 
@@ -253,7 +325,7 @@
                 <span id="panelIcon" style="font-size: 60px;">🎮</span>
                 <h2 id="panelTitle" style="margin: 0;">Game Title</h2>
             </div>
-            <button onclick="closePanel()" style="cursor:pointer; background:none; border:none; font-size:24px;">✕</button>
+            <button onclick="closePanel()" style="cursor:pointer; background:none; border:none; font-size:24px; color: var(--text-sub);">✕</button>
         </div>
         <div style="display: flex; gap: 40px; align-items: center; height: 100%;">
              <p id="panelDesc">Game description goes here...</p>
@@ -261,12 +333,10 @@
         </div>
     </div>
 
-    <!-- REAL LOGIC SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="module">
         import { supabase } from './static/supabase.js';
 
-        // Initialize UI and check Auth
         document.addEventListener('DOMContentLoaded', async () => {
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) {
@@ -274,14 +344,13 @@
                 return;
             }
             
-            // Set welcome text
-            document.getElementById('welcome-text').innerText = `Welcome back, Player! ✨`;
+            // Welcome [USER] Logic
+            const userName = user.user_metadata.full_name || user.email.split('@')[0];
+            document.getElementById('welcome-text').innerText = `Welcome, ${userName}! ✨`;
             
-            // Load test games
             loadGames();
         });
 
-        // Tab Switching
         window.switchTab = (tabName) => {
             closePanel();
             ['view-home', 'view-create', 'view-settings'].forEach(id => document.getElementById(id).style.display = 'none');
@@ -290,13 +359,11 @@
             document.getElementById('nav-' + tabName).classList.add('active');
         }
 
-        // Dark Mode Logic
         window.toggleDarkMode = () => {
             document.body.classList.toggle('dark-theme');
             localStorage.setItem('bubbleTheme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
         }
 
-        // Logout Logic
         document.getElementById('logoutBtn').onclick = async () => {
             if(confirm("Logout from Bubble Games?")) {
                 await supabase.auth.signOut();
@@ -304,7 +371,6 @@
             }
         }
 
-        // Panel Magic
         window.openPanel = (name, icon, desc) => {
             document.getElementById('panelTitle').innerText = name;
             document.getElementById('panelIcon').innerText = icon;
@@ -316,13 +382,19 @@
             document.getElementById('actionPanel').classList.remove('open');
         }
 
-        // Load some demo games into your new grid!
         function loadGames() {
             const globalGrid = document.getElementById('global-game-grid');
+            const ownedGrid = document.getElementById('owned-game-grid');
+
             const games = [
                 { name: 'Lostination', icon: '👻', desc: 'Survival horror in 3D!' },
                 { name: 'Climb It!', icon: '🏔️', desc: 'Physics-based mountain climbing.' },
                 { name: 'Geometry Dash', icon: '🟦', desc: 'Rhythm based platforming.' }
+            ];
+
+            const creations = [
+                { name: 'Bubble Craft', icon: '🫧', desc: 'The ultimate bubble world.' },
+                { name: 'Arti Abe AI', icon: '🤖', desc: 'Your smart robot pal.' }
             ];
 
             globalGrid.innerHTML = games.map(g => `
@@ -331,9 +403,16 @@
                     <h3>${g.name}</h3>
                 </div>
             `).join('');
+
+            ownedGrid.innerHTML = creations.map(g => `
+                <div class="market-card" onclick="openPanel('${g.name}', '${g.icon}', '${g.desc}')">
+                    <span class="edit-badge">OWNED</span>
+                    <span class="market-icon">${g.icon}</span>
+                    <h3>${g.name}</h3>
+                </div>
+            `).join('');
         }
 
-        // Apply saved theme
         if (localStorage.getItem('bubbleTheme') === 'dark') {
             document.body.classList.add('dark-theme');
             document.getElementById('darkToggle').checked = true;
