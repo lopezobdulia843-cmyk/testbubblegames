@@ -13,7 +13,14 @@ onAuthStateChanged(auth, async (user) => {
         if (welcomeText) welcomeText.innerText = `Welcome back, ${displayName}! ✨`;
         
         loadGlobalGames();
-        loadUserGames(); // Added this so "My Games" shows the message
+        loadUserGames(); 
+
+        // Apply saved theme on login
+        if (localStorage.getItem('bubbleTheme') === 'dark') {
+            document.body.classList.add('dark-theme');
+            const toggle = document.getElementById('darkToggle');
+            if (toggle) toggle.checked = true;
+        }
     }
 });
 
@@ -22,7 +29,6 @@ async function loadGlobalGames() {
     const globalGrid = document.getElementById('global-game-grid');
     if (!globalGrid) return;
 
-    // Change this to [] to test the "No games" message
     const games = [
         { name: 'Lostination', icon: '👻', desc: 'Survival.' },
         { name: 'Bubble Craft', icon: '💎', desc: 'Building.' },
@@ -43,10 +49,9 @@ async function loadGlobalGames() {
 }
 
 async function loadUserGames() {
-    const userGrid = document.getElementById('owned-game-grid'); // Make sure this ID exists in your HTML
+    const userGrid = document.getElementById('owned-game-grid'); 
     if (!userGrid) return;
     
-    // For now, this is empty so it shows your message
     const userGames = []; 
 
     if (userGames.length === 0) {
@@ -54,7 +59,7 @@ async function loadUserGames() {
     }
 }
 
-// --- 3. LOGOUT (FIXED) ---
+// --- 3. LOGOUT ---
 window.handleLogout = async () => {
     try {
         await signOut(auth);
@@ -66,9 +71,22 @@ window.handleLogout = async () => {
 
 // --- 4. TABS & PANELS ---
 window.switchTab = (t) => {
+    // Switch views
     const v = ['view-home', 'view-create', 'view-settings'];
     v.forEach(id => { if(document.getElementById(id)) document.getElementById(id).style.display = 'none'; });
     if(document.getElementById(`view-${t}`)) document.getElementById(`view-${t}`).style.display = 'flex';
+
+    // Update Sidebar Blue Glow
+    const icons = ['nav-home', 'nav-create', 'nav-settings'];
+    icons.forEach(id => { if(document.getElementById(id)) document.getElementById(id).classList.remove('active'); });
+    if(document.getElementById(`nav-${t}`)) document.getElementById(`nav-${t}`).classList.add('active');
+
+    window.closePanel();
+};
+
+window.toggleDarkMode = () => {
+    const isDark = document.body.classList.toggle('dark-theme');
+    localStorage.setItem('bubbleTheme', isDark ? 'dark' : 'light');
 };
 
 window.openPanel = (n, i, d) => {
