@@ -13,6 +13,7 @@ onAuthStateChanged(auth, async (user) => {
         if (welcomeText) welcomeText.innerText = `Welcome back, ${displayName}! ✨`;
         
         loadGlobalGames();
+        loadUserGames(); // Added this so "My Games" shows the message
     }
 });
 
@@ -20,11 +21,19 @@ onAuthStateChanged(auth, async (user) => {
 async function loadGlobalGames() {
     const globalGrid = document.getElementById('global-game-grid');
     if (!globalGrid) return;
+
+    // Change this to [] to test the "No games" message
     const games = [
         { name: 'Lostination', icon: '👻', desc: 'Survival.' },
         { name: 'Bubble Craft', icon: '💎', desc: 'Building.' },
         { name: 'Geometry Dash', icon: '🟦', desc: 'Rhythm.' }
     ];
+
+    if (games.length === 0) {
+        globalGrid.innerHTML = `<p class="no-games">No games here! Time to start creating? 🫧</p>`;
+        return;
+    }
+
     globalGrid.innerHTML = games.map(g => `
         <div class="market-card" onclick="openPanel('${g.name}', '${g.icon}', '${g.desc}')">
             <span class="market-icon">${g.icon}</span>
@@ -33,10 +42,26 @@ async function loadGlobalGames() {
     `).join('');
 }
 
-// --- 3. LOGOUT ---
+async function loadUserGames() {
+    const userGrid = document.getElementById('owned-game-grid'); // Make sure this ID exists in your HTML
+    if (!userGrid) return;
+    
+    // For now, this is empty so it shows your message
+    const userGames = []; 
+
+    if (userGames.length === 0) {
+        userGrid.innerHTML = `<p class="no-games">You haven't created any games yet. Start creating! 🚀</p>`;
+    }
+}
+
+// --- 3. LOGOUT (FIXED) ---
 window.handleLogout = async () => {
-    await signOut(auth);
-    window.location.replace('index.html');
+    try {
+        await signOut(auth);
+        window.location.replace('index.html');
+    } catch (error) {
+        console.error("Logout failed", error);
+    }
 };
 
 // --- 4. TABS & PANELS ---
@@ -45,10 +70,15 @@ window.switchTab = (t) => {
     v.forEach(id => { if(document.getElementById(id)) document.getElementById(id).style.display = 'none'; });
     if(document.getElementById(`view-${t}`)) document.getElementById(`view-${t}`).style.display = 'flex';
 };
+
 window.openPanel = (n, i, d) => {
     document.getElementById('panelTitle').innerText = n;
     document.getElementById('panelIcon').innerText = i;
     document.getElementById('panelDesc').innerText = d;
     document.getElementById('actionPanel').classList.add('open');
 };
-window.closePanel = () => document.getElementById('actionPanel').classList.remove('open');
+
+window.closePanel = () => {
+    const panel = document.getElementById('actionPanel');
+    if (panel) panel.classList.remove('open');
+};
