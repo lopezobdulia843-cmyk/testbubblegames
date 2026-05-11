@@ -1,120 +1,99 @@
-import { auth, db } from './firebase-config.js';
-import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-// --- 1. ONLY SHOW DATA (NO KICKING) ---
-onAuthStateChanged(auth, async (user) => {
-    if (user) {
-        const welcomeText = document.getElementById('welcome-text');
-        
-        // Instant Fallback: Use the name from the email (e.g., Abraham) while we wait for Firestore
-        const emailPrefix = user.email ? user.email.split('@')[0] : "Player";
-        if (welcomeText) welcomeText.innerText = `Welcome back, ${emailPrefix}! ✨`;
-
-        // Function to fetch the actual Firestore username
-        const getUsername = async (uid, attempts = 0) => {
-            try {
-                const docRef = doc(db, "profiles", uid);
-                const docSnap = await getDoc(docRef);
-                
-                if (docSnap.exists()) {
-                    return docSnap.data().username;
-                } else if (attempts < 3) {
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                    return getUsername(uid, attempts + 1);
-                }
-            } catch (err) {
-                console.error("Firestore lookup failed:", err);
-            }
-            return emailPrefix; // Use email prefix instead of "Player" if Firestore fails
-        };
-
-        const displayName = await getUsername(user.uid);
-        if (welcomeText) welcomeText.innerText = `Welcome back, ${displayName}! ✨`;
-        
-        loadGlobalGames();
-        loadUserGames(); 
-
-        // Apply saved theme on login
-        if (localStorage.getItem('bubbleTheme') === 'dark') {
-            document.body.classList.add('dark-theme');
-            const toggle = document.getElementById('darkToggle');
-            if (toggle) toggle.checked = true;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bubble Games | Hub</title>
+    <link rel="stylesheet" href="style.css"> <style>
+        /* QUICK BUBBLE THEME COLORS */
+        :root {
+            --bg: #f0f4f8;
+            --card: #ffffff;
+            --text: #333;
+            --accent: #00a8ff;
         }
-    }
-});
+        body.dark-theme {
+            --bg: #1a1a2e;
+            --card: #16213e;
+            --text: #e94560;
+            --accent: #0f3460;
+        }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        
+        /* HEADER */
+        header { padding: 20px; text-align: center; background: var(--card); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        
+        /* NAVIGATION */
+        nav { display: flex; justify-content: center; gap: 20px; padding: 15px; background: var(--card); border-top: 1px solid #ddd; }
+        .nav-btn { cursor: pointer; font-size: 1.2rem; padding: 10px 20px; border-radius: 20px; transition: 0.3s; }
+        .nav-btn.active { background: var(--accent); color: white; }
 
-// --- 2. LOAD GAMES ---
-async function loadGlobalGames() {
-    const globalGrid = document.getElementById('global-game-grid');
-    if (!globalGrid) return;
+        /* CONTENT AREAS */
+        .view { display: none; flex-direction: column; align-items: center; padding: 20px; overflow-y: auto; flex: 1; }
+        #view-home { display: flex; } /* Show home by default */
 
-    const games = [
-        { name: 'Lostination', icon: '👻', desc: 'Survival.' },
-        { name: 'Bubble Craft', icon: '💎', desc: 'Building.' },
-        { name: 'Geometry Dash', icon: '🟦', desc: 'Rhythm.' }
-    ];
+        /* GAME GRIDS */
+        .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; width: 100%; max-width: 800px; }
+        .market-card { background: var(--card); padding: 20px; border-radius: 15px; text-align: center; cursor: pointer; transition: transform 0.2s; box-shadow: 0 5px 10px rgba(0,0,0,0.1); }
+        .market-card:hover { transform: translateY(-5px); }
+        .market-icon { font-size: 3rem; display: block; margin-bottom: 10px; }
 
-    if (games.length === 0) {
-        globalGrid.innerHTML = `<p class="no-games">No games here! Time to start creating? 🫧</p>`;
-        return;
-    }
+        /* ACTION PANEL (The Slide-Out Menu) */
+        #actionPanel { position: fixed; bottom: -100%; left: 0; width: 100%; background: var(--card); padding: 30px; transition: 0.5s; border-radius: 30px 30px 0 0; box-shadow: 0 -10px 20px rgba(0,0,0,0.2); text-align: center; }
+        #actionPanel.open { bottom: 0; }
+        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; }
+    </style>
+</head>
+<body>
 
-    globalGrid.innerHTML = games.map(g => `
-        <div class="market-card" onclick="openPanel('${g.name}', '${g.icon}', '${g.desc}')">
-            <span class="market-icon">${g.icon}</span>
-            <h3>${g.name}</h3>
-        </div>
-    `).join('');
-}
+    <header>
+        <h1 id="welcome-text">Loading the Hub... ✨</h1>
+    </header>
 
-async function loadUserGames() {
-    const userGrid = document.getElementById('owned-game-grid'); 
-    if (!userGrid) return;
-    
-    const userGames = []; 
+    <main style="flex: 1; display: flex; flex-direction: column;">
+        <section id="view-home" class="view">
+            <h2>Global Games 🌍</h2>
+            <div id="global-game-grid" class="game-grid">
+                </div>
+            
+            <hr style="width: 80%; margin: 30px 0; opacity: 0.2;">
+            
+            <h2>Your Games 💎</h2>
+            <div id="owned-game-grid" class="game-grid">
+                </div>
+        </section>
 
-    if (userGames.length === 0) {
-        userGrid.innerHTML = `<p class="no-games">You haven't created any games yet. Start creating! 🚀</p>`;
-    }
-}
+        <section id="view-create" class="view">
+            <h2>Create Something New! 🚀</h2>
+            <p>The game engine is warming up...</p>
+        </section>
 
-// --- 3. LOGOUT ---
-window.handleLogout = async () => {
-    try {
-        await signOut(auth);
-        window.location.replace('index.html');
-    } catch (error) {
-        console.error("Logout failed", error);
-    }
-};
+        <section id="view-settings" class="view">
+            <h2>Settings ⚙️</h2>
+            <div style="background: var(--card); padding: 20px; border-radius: 15px;">
+                <label>
+                    <input type="checkbox" id="darkToggle" onchange="toggleDarkMode()"> Dark Mode
+                </label>
+                <br><br>
+                <button onclick="handleLogout()" style="background: #ff4757; color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer;">Logout</button>
+            </div>
+        </section>
+    </main>
 
-// --- 4. TABS & PANELS ---
-window.switchTab = (t) => {
-    const v = ['view-home', 'view-create', 'view-settings'];
-    v.forEach(id => { if(document.getElementById(id)) document.getElementById(id).style.display = 'none'; });
-    if(document.getElementById(`view-${t}`)) document.getElementById(`view-${t}`).style.display = 'flex';
+    <nav>
+        <div id="nav-home" class="nav-btn active" onclick="switchTab('home')">🏠</div>
+        <div id="nav-create" class="nav-btn" onclick="switchTab('create')">➕</div>
+        <div id="nav-settings" class="nav-btn" onclick="switchTab('settings')">⚙️</div>
+    </nav>
 
-    const icons = ['nav-home', 'nav-create', 'nav-settings'];
-    icons.forEach(id => { if(document.getElementById(id)) document.getElementById(id).classList.remove('active'); });
-    if(document.getElementById(`nav-${t}`)) document.getElementById(`nav-${t}`).classList.add('active');
+    <div id="actionPanel">
+        <span class="close-btn" onclick="closePanel()">✖</span>
+        <span id="panelIcon" style="font-size: 4rem;"></span>
+        <h2 id="panelTitle">Game Name</h2>
+        <p id="panelDesc">Game Description goes here.</p>
+        <button style="background: var(--accent); color: white; border: none; padding: 15px 40px; border-radius: 25px; font-size: 1.2rem; cursor: pointer;">PLAY NOW</button>
+    </div>
 
-    window.closePanel();
-};
-
-window.toggleDarkMode = () => {
-    const isDark = document.body.classList.toggle('dark-theme');
-    localStorage.setItem('bubbleTheme', isDark ? 'dark' : 'light');
-};
-
-window.openPanel = (n, i, d) => {
-    document.getElementById('panelTitle').innerText = n;
-    document.getElementById('panelIcon').innerText = i;
-    document.getElementById('panelDesc').innerText = d;
-    document.getElementById('actionPanel').classList.add('open');
-};
-
-window.closePanel = () => {
-    const panel = document.getElementById('actionPanel');
-    if (panel) panel.classList.remove('open');
-};
+    <script type="module" src="hub.js"></script>
+</body>
+</html>
