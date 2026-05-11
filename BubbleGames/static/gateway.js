@@ -1,6 +1,6 @@
 import { auth, db } from './firebase-config.js';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { doc, setDoc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { doc, setDoc, getDoc, collection, query, where, getDocs, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // 1. SET DEFAULT MODE
 window.mode = "login"; 
@@ -41,6 +41,12 @@ window.handleAuth = async () => {
         return;
     }
 
+    // 🛑 ANTI-NUMBER SHIELD: Cannot be ONLY numbers!
+    if (/^\d+$/.test(username)) {
+        alert("Username cannot be only numbers! Add some ducky letters! 🦆");
+        return;
+    }
+
     loader.style.display = 'block';
     mainButton.style.opacity = '0.5'; 
     mainButton.disabled = true;
@@ -49,6 +55,7 @@ window.handleAuth = async () => {
 
     if (window.mode === "signup") {
         try {
+            // Check if name is taken
             const q = query(collection(db, "profiles"), where("username", "==", username));
             const querySnapshot = await getDocs(q);
             if (!querySnapshot.empty) {
@@ -56,12 +63,32 @@ window.handleAuth = async () => {
                 resetButton(mainButton, loader);
                 return;
             }
+
+            // 1️⃣ Get the next ID from stats/global
+            const statsRef = doc(db, "stats", "global");
+            const statsSnap = await getDoc(statsRef);
+            
+            // If stats/global doesn't exist yet, we start at 1
+            let newId = 1;
+            if (statsSnap.exists()) {
+                newId = statsSnap.data().total_players + 1;
+            }
+
+            // 2️⃣ Create the Auth Account
             const userCredential = await createUserWithEmailAndPassword(auth, userEmail, password);
-            // THIS PART SAVES THE NAME - KEEPING IT EXACTLY THE SAME
+
+            // 3️⃣ Save the REAL Profile
             await setDoc(doc(db, "profiles", userCredential.user.uid), {
                 username: username,
+                id: newId, // Your official number!
+                email: userEmail,
+                rank: newId === 1 ? "Owner" : "Player", // You get Owner status if you are #1!
                 createdAt: new Date()
             });
+
+            // 4️⃣ Update the counter for the next person
+            await setDoc(statsRef, { total_players: newId }, { merge: true });
+
         } catch (error) {
             alert("Error: " + error.message);
             resetButton(mainButton, loader);
@@ -92,7 +119,6 @@ onAuthStateChanged(auth, (user) => {
 
     if (user) {
         if (isLoginPage) {
-            // Added a tiny delay to make sure the Firestore write finishes before moving
             setTimeout(() => {
                 window.location.replace('hub.html'); 
             }, 500);
