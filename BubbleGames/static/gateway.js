@@ -46,7 +46,6 @@ window.handleAuth = async () => {
     mainButton.disabled = true;
 
     if (window.mode === "signup") {
-        // 🛑 ANTI-NUMBER SHIELD for Signup
         if (/^\d+$/.test(usernameInput)) {
             alert("Username cannot be only numbers! Add some letters! 🦆");
             resetButton(mainButton, loader);
@@ -54,7 +53,6 @@ window.handleAuth = async () => {
         }
 
         try {
-            // Check if name is taken
             const q = query(collection(db, "profiles"), where("username", "==", usernameInput));
             const querySnapshot = await getDocs(q);
             if (!querySnapshot.empty) {
@@ -63,7 +61,6 @@ window.handleAuth = async () => {
                 return;
             }
 
-            // 1️⃣ Get the next ID from stats/global
             const statsRef = doc(db, "stats", "global");
             const statsSnap = await getDoc(statsRef);
             let newId = 1;
@@ -71,13 +68,9 @@ window.handleAuth = async () => {
                 newId = statsSnap.data().total_players + 1;
             }
 
-            // 2️⃣ MAKE THE EMAIL FROM THE ID!
             const userEmail = `${newId}@bubblegames.com`;
-
-            // 3️⃣ Create the Auth Account
             const userCredential = await createUserWithEmailAndPassword(auth, userEmail, password);
 
-            // 4️⃣ Save the REAL Profile
             await setDoc(doc(db, "profiles", userCredential.user.uid), {
                 username: usernameInput,
                 id: newId,
@@ -86,7 +79,6 @@ window.handleAuth = async () => {
                 createdAt: new Date()
             });
 
-            // 5️⃣ Update the counter
             await setDoc(statsRef, { total_players: newId }, { merge: true });
 
         } catch (error) {
@@ -94,12 +86,30 @@ window.handleAuth = async () => {
             resetButton(mainButton, loader);
         }
     } else {
-        // LOGIN LOGIC: Use the ID they typed to log in
+        // 🕵️‍♂️ THE SMART LOGIN LOGIC
         try {
-            const userEmail = `${usernameInput}@bubblegames.com`;
+            // 1. Look in the "profiles" column for the username typed
+            const q = query(collection(db, "profiles"), where("username", "==", usernameInput));
+            const querySnapshot = await getDocs(q);
+
+            if (querySnapshot.empty) {
+                alert("Player not found! Check your name! 🔍");
+                resetButton(mainButton, loader);
+                return;
+            }
+
+            // 2. Pull the ID (like 1, 2, 3) from the profile we found
+            let foundId;
+            querySnapshot.forEach((doc) => {
+                foundId = doc.data().id;
+            });
+
+            // 3. Create the secret email and check the password
+            const userEmail = `${foundId}@bubblegames.com`;
             await signInWithEmailAndPassword(auth, userEmail, password);
+
         } catch (error) {
-            alert("Wrong password or ID not found! 🔑");
+            alert("Wrong password! 🔑");
             resetButton(mainButton, loader);
         }
     }
