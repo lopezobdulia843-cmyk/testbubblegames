@@ -50,9 +50,7 @@ async function loadGlobalGames() {
     if (!globalGrid) return;
 
     const games = [
-        { name: 'Lostination', icon: '👻', desc: 'Survival.' },
-        { name: 'Bubble Craft', icon: '💎', desc: 'Building.' },
-        { name: 'Geometry Dash', icon: '🟦', desc: 'Rhythm.' }
+     
     ];
 
     if (games.length === 0) {
