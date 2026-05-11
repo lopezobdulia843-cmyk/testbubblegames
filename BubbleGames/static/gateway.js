@@ -31,19 +31,13 @@ window.switchMode = () => {
 
 // 3. HANDLE AUTHENTICATION
 window.handleAuth = async () => {
-    const username = document.getElementById('username').value.trim();
+    const usernameInput = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value;
     const mainButton = document.getElementById('main-button');
     const loader = document.getElementById('loader');
 
-    if (!username || !password) {
+    if (!usernameInput || !password) {
         alert("Oops! Don't forget your username and password! ✨");
-        return;
-    }
-
-    // 🛑 ANTI-NUMBER SHIELD: Cannot be ONLY numbers!
-    if (/^\d+$/.test(username)) {
-        alert("Username cannot be only numbers! Add some ducky letters! 🦆");
         return;
     }
 
@@ -51,12 +45,17 @@ window.handleAuth = async () => {
     mainButton.style.opacity = '0.5'; 
     mainButton.disabled = true;
 
-    const userEmail = `${username}@bubblegames.com`;
-
     if (window.mode === "signup") {
+        // 🛑 ANTI-NUMBER SHIELD for Signup
+        if (/^\d+$/.test(usernameInput)) {
+            alert("Username cannot be only numbers! Add some letters! 🦆");
+            resetButton(mainButton, loader);
+            return;
+        }
+
         try {
             // Check if name is taken
-            const q = query(collection(db, "profiles"), where("username", "==", username));
+            const q = query(collection(db, "profiles"), where("username", "==", usernameInput));
             const querySnapshot = await getDocs(q);
             if (!querySnapshot.empty) {
                 alert("That username is already taken! 🫧");
@@ -67,26 +66,27 @@ window.handleAuth = async () => {
             // 1️⃣ Get the next ID from stats/global
             const statsRef = doc(db, "stats", "global");
             const statsSnap = await getDoc(statsRef);
-            
-            // If stats/global doesn't exist yet, we start at 1
             let newId = 1;
             if (statsSnap.exists()) {
                 newId = statsSnap.data().total_players + 1;
             }
 
-            // 2️⃣ Create the Auth Account
+            // 2️⃣ MAKE THE EMAIL FROM THE ID!
+            const userEmail = `${newId}@bubblegames.com`;
+
+            // 3️⃣ Create the Auth Account
             const userCredential = await createUserWithEmailAndPassword(auth, userEmail, password);
 
-            // 3️⃣ Save the REAL Profile
+            // 4️⃣ Save the REAL Profile
             await setDoc(doc(db, "profiles", userCredential.user.uid), {
-                username: username,
-                id: newId, // Your official number!
+                username: usernameInput,
+                id: newId,
                 email: userEmail,
-                rank: newId === 1 ? "Owner" : "Player", // You get Owner status if you are #1!
+                rank: newId === 1 ? "Owner" : "Player",
                 createdAt: new Date()
             });
 
-            // 4️⃣ Update the counter for the next person
+            // 5️⃣ Update the counter
             await setDoc(statsRef, { total_players: newId }, { merge: true });
 
         } catch (error) {
@@ -94,10 +94,12 @@ window.handleAuth = async () => {
             resetButton(mainButton, loader);
         }
     } else {
+        // LOGIN LOGIC: Use the ID they typed to log in
         try {
+            const userEmail = `${usernameInput}@bubblegames.com`;
             await signInWithEmailAndPassword(auth, userEmail, password);
         } catch (error) {
-            alert("Wrong password or player not found! 🔑");
+            alert("Wrong password or ID not found! 🔑");
             resetButton(mainButton, loader);
         }
     }
@@ -116,17 +118,12 @@ function resetButton(btn, ldr) {
 onAuthStateChanged(auth, (user) => {
     const isLoginPage = window.location.pathname.includes('index.html') || window.location.pathname === '/';
     const isHubPage = window.location.pathname.includes('hub.html');
-
     if (user) {
         if (isLoginPage) {
-            setTimeout(() => {
-                window.location.replace('hub.html'); 
-            }, 500);
+            setTimeout(() => { window.location.replace('hub.html'); }, 500);
         }
     } else {
-        if (isHubPage) {
-            window.location.replace('index.html');
-        }
+        if (isHubPage) { window.location.replace('index.html'); }
     }
 });
 
