@@ -53,10 +53,20 @@ window.handleAuth = async () => {
         }
 
         try {
-            const q = query(collection(db, "profiles"), where("username", "==", usernameInput));
-            const querySnapshot = await getDocs(q);
-            if (!querySnapshot.empty) {
-                alert("That username is already taken! 🫧");
+            // 🕵️‍♂️ THE CODE-SIDE LOWERCASE CHECK
+            const allProfiles = await getDocs(collection(db, "profiles"));
+            let isTaken = false;
+
+            allProfiles.forEach((doc) => {
+                const existingName = doc.data().username;
+                // If the name exists (ignoring CAPITALS), we block it!
+                if (existingName.toLowerCase() === usernameInput.toLowerCase()) {
+                    isTaken = true;
+                }
+            });
+
+            if (isTaken) {
+                alert("That username is already taken! (Check your capitals!) 🫧");
                 resetButton(mainButton, loader);
                 return;
             }
@@ -86,9 +96,8 @@ window.handleAuth = async () => {
             resetButton(mainButton, loader);
         }
     } else {
-        // 🕵️‍♂️ THE SMART LOGIN LOGIC
+        // 🕵️‍♂️ LOGIN LOGIC
         try {
-            // 1. Look in the "profiles" column for the username typed
             const q = query(collection(db, "profiles"), where("username", "==", usernameInput));
             const querySnapshot = await getDocs(q);
 
@@ -98,13 +107,11 @@ window.handleAuth = async () => {
                 return;
             }
 
-            // 2. Pull the ID (like 1, 2, 3) from the profile we found
             let foundId;
             querySnapshot.forEach((doc) => {
                 foundId = doc.data().id;
             });
 
-            // 3. Create the secret email and check the password
             const userEmail = `${foundId}@bubblegames.com`;
             await signInWithEmailAndPassword(auth, userEmail, password);
 
