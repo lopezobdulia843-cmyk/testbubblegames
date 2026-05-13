@@ -17,39 +17,45 @@
 
     <link rel="stylesheet" href="static/style.css">
     <style>
-        /* Making the images MUCH bigger */
+        /* HUGE logo sizes to fix what we saw in Screenshot 2026-05-13 001152.png */
         .brand-img-main {
-            height: 220px; /* Big and bold */
+            height: 280px; /* Massive centerpiece */
             width: auto;
             display: block;
-            margin: 0 auto;
+            margin: 0 auto -20px auto; /* Pulls the content up to fix the forehead */
         }
         .brand-img-corner {
-            height: 80px; /* Bigger corner logo */
+            height: 90px; /* Big enough to read in the corner */
             width: auto;
             vertical-align: middle;
         }
 
-        /* Fixing the "Big Forehead" - remove top padding/title when logo is used */
+        /* Fixing the layout spacing */
         .main-wrapper {
-            padding-top: 20px !important; 
+            padding-top: 10px !important; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         .page-welcome {
-            display: none; /* Removes the "Getting Started" text to save space */
+            display: block !important; /* Brought it back! */
+            margin-bottom: 10px;
+            font-size: 2rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
         .bubble-card {
-            margin-top: 0 !important;
+            margin-top: 5px !important;
         }
         .brand {
-            margin-bottom: 20px; /* Space between logo and inputs */
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
 
     <div class="corner-brand">
-        <!-- Replace top-left text with Logo -->
-        <img src="BubbleGames-logo.png" alt="🫧 BubbleGames" class="brand-img-corner" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline'">
+        <!-- Replaced top-left text with Logo while keeping the container -->
+        <img src="BubbleGames-logo.png" alt="BubbleGames" class="brand-img-corner" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline'">
         <span style="display:none;">🫧 Bubble<span class="brand-pink">Games</span></span>
     </div>
 
@@ -59,12 +65,12 @@
     </div>
 
     <div class="main-wrapper">
-        <!-- Hidden by CSS to fix the spacing issue -->
+        <!-- Text is back! -->
         <h2 class="page-welcome" id="page-title">Getting Started</h2>
 
         <div class="bubble-card">
             <div class="brand">
-                <!-- Replace middle logo text with Logo -->
+                <!-- Massive centerpiece logo -->
                 <img src="BubbleGames-logo.png" id="main-logo" alt="Bubble Games" class="brand-img-main" onerror="this.outerHTML='<span class=\'bubble-icon\'>🫧</span><h1>Bubble<span>Games</span></h1>'">
             </div>
 
