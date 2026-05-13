@@ -17,43 +17,60 @@
 
     <link rel="stylesheet" href="static/style.css">
     <style>
-        /* Scaling fix based on Screenshot 2026-05-13 002721.png */
+        /* Scaling fix based on Screenshot 2026-05-13 003035.jpg */
         .brand-img-main {
-            width: 75%; /* Fills the card width-wise */
-            max-height: 250px; 
+            width: 90%; /* Sized to the grid as planned */
             height: auto;
             display: block;
-            margin: 0 auto; 
+            margin: 0 auto;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.05));
         }
         .brand-img-corner {
-            height: 70px; /* Matched to header text size */
+            height: 85px; 
             width: auto;
             vertical-align: middle;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1)); /* Pop off the background */
         }
 
-        /* Fixing the forehead and squish issues */
+        /* The Grid Solution */
         .main-wrapper {
-            padding-top: 40px !important; /* Spacing above 'Getting Started' */
+            padding-top: 60px !important; /* Perfect distance from top */
             display: flex;
             flex-direction: column;
             align-items: center;
+            min-height: 100vh;
         }
         .page-welcome {
             display: block !important; 
-            margin: 0 0 25px 0 !important; /* Space between text and card */
-            font-size: 2.2rem;
+            margin: 0 0 20px 0 !important; 
+            font-size: 2.5rem;
             font-weight: bold;
-            color: #5b5be3; /* Matched color from screen */
+            color: #5b5be3;
         }
+        
         .bubble-card {
             margin-top: 0 !important;
-            padding: 30px !important; /* Balanced padding inside the box */
+            padding: 25px !important;
+            /* GRID MAGIC: Locks the rows so they can't stretch */
+            display: grid !important;
+            grid-template-rows: min-content auto; 
+            gap: 10px;
+            width: 400px; /* Consistent width for the grid */
+            height: auto !important; /* No more tall empty boxes */
+        }
+
+        .brand {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #auth-area {
             display: flex;
             flex-direction: column;
             gap: 15px;
-        }
-        .brand {
-            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -74,6 +91,7 @@
 
         <div class="bubble-card">
             <div class="brand">
+                <!-- Grid-sized and locked -->
                 <img src="BubbleGames-logo.png" id="main-logo" alt="Bubble Games" class="brand-img-main" onerror="this.outerHTML='<span class=\'bubble-icon\'>🫧</span><h1>Bubble<span>Games</span></h1>'">
             </div>
 
