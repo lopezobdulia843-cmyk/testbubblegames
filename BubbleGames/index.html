@@ -19,35 +19,38 @@
     <style>
         /* HUGE logo sizes to fix what we saw in Screenshot 2026-05-13 001152.png */
         .brand-img-main {
-            height: 280px; /* Massive centerpiece */
+            height: 320px; /* Even bigger centerpiece */
             width: auto;
             display: block;
-            margin: 0 auto -20px auto; /* Pulls the content up to fix the forehead */
+            margin: -10px auto -30px auto; /* Negative margin pulls inputs up to fix forehead */
         }
         .brand-img-corner {
-            height: 90px; /* Big enough to read in the corner */
+            height: 100px; /* Large corner logo */
             width: auto;
             vertical-align: middle;
         }
 
-        /* Fixing the layout spacing */
+        /* Fixing the layout spacing to fix the forehead issue */
         .main-wrapper {
-            padding-top: 10px !important; 
+            padding-top: 5px !important; 
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
         }
         .page-welcome {
-            display: block !important; /* Brought it back! */
-            margin-bottom: 10px;
-            font-size: 2rem;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            display: block !important; 
+            margin: 0 0 5px 0 !important; /* Tiny margin to keep it tight */
+            font-size: 2.2rem;
+            font-weight: bold;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         .bubble-card {
-            margin-top: 5px !important;
+            margin-top: 0 !important; /* No extra space at top of card */
+            padding-top: 10px !important;
         }
         .brand {
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
     </style>
 </head>
