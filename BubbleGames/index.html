@@ -17,15 +17,15 @@
 
     <link rel="stylesheet" href="static/style.css">
     <style>
-        /* Ensuring the images fit the existing text sizes */
+        /* Making the images much bigger as requested */
         .brand-img-main {
-            height: 80px; /* Matches the size of the original H1 area */
+            height: 160px; /* Doubled size for the main card logo */
             width: auto;
             display: block;
-            margin: 0 auto;
+            margin: 0 auto 15px auto; /* Added a little space at the bottom */
         }
         .brand-img-corner {
-            height: 30px; /* Matches the size of the corner-brand text */
+            height: 55px; /* Increased from 30px to 55px for the corner */
             width: auto;
             vertical-align: middle;
         }
@@ -50,7 +50,7 @@
         <div class="bubble-card">
             <div class="brand">
                 <!-- Replace middle logo text with Logo -->
-                <img src="BubbleGames-logo.png" alt="Bubble Games" class="brand-img-main" onerror="this.outerHTML='<span class=\'bubble-icon\'>🫧</span><h1>Bubble<span>Games</span></h1>'">
+                <img src="BubbleGames-logo.png" id="main-logo" alt="Bubble Games" class="brand-img-main" onerror="this.outerHTML='<span class=\'bubble-icon\'>🫧</span><h1>Bubble<span>Games</span></h1>'">
             </div>
 
             <div id="auth-area">
