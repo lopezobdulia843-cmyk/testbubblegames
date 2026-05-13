@@ -16,12 +16,27 @@
     </script>
 
     <link rel="stylesheet" href="static/style.css">
+    <style>
+        /* Ensuring the images fit the existing text sizes */
+        .brand-img-main {
+            height: 80px; /* Matches the size of the original H1 area */
+            width: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        .brand-img-corner {
+            height: 30px; /* Matches the size of the corner-brand text */
+            width: auto;
+            vertical-align: middle;
+        }
+    </style>
 </head>
 <body>
 
     <div class="corner-brand">
-        <span class="brand-bubble">🫧</span> 
-        Bubble<span class="brand-pink">Games</span>
+        <!-- Replace top-left text with Logo -->
+        <img src="BubbleGames-logo.png" alt="🫧 BubbleGames" class="brand-img-corner" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline'">
+        <span style="display:none;">🫧 Bubble<span class="brand-pink">Games</span></span>
     </div>
 
     <div id="user-status" class="user-status" style="display: none;">
@@ -34,8 +49,8 @@
 
         <div class="bubble-card">
             <div class="brand">
-                <span class="bubble-icon">🫧</span>
-                <h1>Bubble<span>Games</span></h1>
+                <!-- Replace middle logo text with Logo -->
+                <img src="BubbleGames-logo.png" alt="Bubble Games" class="brand-img-main" onerror="this.outerHTML='<span class=\'bubble-icon\'>🫧</span><h1>Bubble<span>Games</span></h1>'">
             </div>
 
             <div id="auth-area">
