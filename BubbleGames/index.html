@@ -17,17 +17,31 @@
 
     <link rel="stylesheet" href="static/style.css">
     <style>
-        /* Making the images much bigger as requested */
+        /* Making the images MUCH bigger */
         .brand-img-main {
-            height: 400px; /* Doubled size for the main card logo */
+            height: 220px; /* Big and bold */
             width: auto;
             display: block;
-            margin: 0 auto 15px auto; /* Added a little space at the bottom */
+            margin: 0 auto;
         }
         .brand-img-corner {
-            height: 55px; /* Increased from 30px to 55px for the corner */
+            height: 80px; /* Bigger corner logo */
             width: auto;
             vertical-align: middle;
+        }
+
+        /* Fixing the "Big Forehead" - remove top padding/title when logo is used */
+        .main-wrapper {
+            padding-top: 20px !important; 
+        }
+        .page-welcome {
+            display: none; /* Removes the "Getting Started" text to save space */
+        }
+        .bubble-card {
+            margin-top: 0 !important;
+        }
+        .brand {
+            margin-bottom: 20px; /* Space between logo and inputs */
         }
     </style>
 </head>
@@ -45,6 +59,7 @@
     </div>
 
     <div class="main-wrapper">
+        <!-- Hidden by CSS to fix the spacing issue -->
         <h2 class="page-welcome" id="page-title">Getting Started</h2>
 
         <div class="bubble-card">
