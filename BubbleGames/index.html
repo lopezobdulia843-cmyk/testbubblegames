@@ -6,28 +6,29 @@
     <title>Bubble Games | Welcome</title>
 
     <script>
-        if (!localStorage.getItem('ghosts_cleared_v3')) {
+        // FORCED RESET: Clears the "ghosts" once and then marks it as clean
+        if (!localStorage.getItem('ghosts_cleared_v4')) {
             localStorage.clear();
             sessionStorage.clear();
-            localStorage.setItem('ghosts_cleared_v3', 'true');
+            localStorage.setItem('ghosts_cleared_v4', 'true');
             window.location.reload(); 
         }
     </script>
 
     <link rel="stylesheet" href="static/style.css">
     <style>
-        /* Scaling fixes for Screenshot 2026-05-13 003351.jpg */
+        /* FIXING OVERFLOW FROM Screenshot 2026-05-13 003351.jpg */
         .brand-img-main {
-            width: 80% !important; /* Slightly smaller to save vertical space */
+            width: 80% !important; /* Smaller to prevent stretching the card down */
             height: auto;
             display: block;
             margin: 0 auto;
         }
         .brand-img-corner {
-            height: 60px; 
+            height: 60px; /* Reduced size for better corner fit */
             width: auto;
             vertical-align: middle;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1));
         }
 
         .main-wrapper {
@@ -35,30 +36,30 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh; /* Lock the view to the screen size */
-            overflow: hidden; /* Prevent the scroll seen in the screenshot */
+            justify-content: center; /* Centers the card vertically */
+            height: 100vh; /* Locks the wrapper to the screen height */
+            box-sizing: border-box;
         }
-
         .page-welcome {
             margin: 0 0 15px 0 !important; 
             font-size: 2.2rem;
+            font-weight: bold;
             color: #5b5be3;
         }
         
         .bubble-card {
-            padding: 20px !important; /* Tighter padding to prevent overflow */
+            margin-top: 0 !important;
+            padding: 20px !important; /* Thinner padding to save space */
             display: grid !important;
             grid-template-rows: auto auto; 
             gap: 10px;
-            width: 380px; 
-            max-height: 90vh; /* Ensure it never goes off-screen */
-            overflow-y: auto; /* Just in case it gets too small on mobile */
+            width: 380px; /* Slimmer width */
+            max-height: 85vh; /* Never lets the card touch the taskbar */
+            overflow-y: auto; /* Adds a scrollbar ONLY if the card is too big for the screen */
         }
 
         .brand { margin-bottom: 5px; }
         #auth-area { display: flex; flex-direction: column; gap: 10px; }
-        .bouncy-input { margin-bottom: 5px; }
     </style>
 </head>
 <body>
