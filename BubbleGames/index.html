@@ -17,47 +17,49 @@
 
     <link rel="stylesheet" href="static/style.css">
     <style>
-        /* HUGE logo sizes to fix what we saw in Screenshot 2026-05-13 001152.png */
+        /* Scaling fix based on Screenshot 2026-05-13 002721.png */
         .brand-img-main {
-            height: 320px; /* Even bigger centerpiece */
-            width: auto;
+            width: 75%; /* Fills the card width-wise */
+            max-height: 250px; 
+            height: auto;
             display: block;
-            margin: -10px auto -30px auto; /* Negative margin pulls inputs up to fix forehead */
+            margin: 0 auto; 
         }
         .brand-img-corner {
-            height: 100px; /* Large corner logo */
+            height: 70px; /* Matched to header text size */
             width: auto;
             vertical-align: middle;
         }
 
-        /* Fixing the layout spacing to fix the forehead issue */
+        /* Fixing the forehead and squish issues */
         .main-wrapper {
-            padding-top: 5px !important; 
+            padding-top: 40px !important; /* Spacing above 'Getting Started' */
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
         }
         .page-welcome {
             display: block !important; 
-            margin: 0 0 5px 0 !important; /* Tiny margin to keep it tight */
+            margin: 0 0 25px 0 !important; /* Space between text and card */
             font-size: 2.2rem;
             font-weight: bold;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            color: #5b5be3; /* Matched color from screen */
         }
         .bubble-card {
-            margin-top: 0 !important; /* No extra space at top of card */
-            padding-top: 10px !important;
+            margin-top: 0 !important;
+            padding: 30px !important; /* Balanced padding inside the box */
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
         .brand {
-            margin-bottom: 5px;
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
 
     <div class="corner-brand">
-        <!-- Replaced top-left text with Logo while keeping the container -->
         <img src="BubbleGames-logo.png" alt="BubbleGames" class="brand-img-corner" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline'">
         <span style="display:none;">🫧 Bubble<span class="brand-pink">Games</span></span>
     </div>
@@ -68,12 +70,10 @@
     </div>
 
     <div class="main-wrapper">
-        <!-- Text is back! -->
         <h2 class="page-welcome" id="page-title">Getting Started</h2>
 
         <div class="bubble-card">
             <div class="brand">
-                <!-- Massive centerpiece logo -->
                 <img src="BubbleGames-logo.png" id="main-logo" alt="Bubble Games" class="brand-img-main" onerror="this.outerHTML='<span class=\'bubble-icon\'>🫧</span><h1>Bubble<span>Games</span></h1>'">
             </div>
 
@@ -107,7 +107,6 @@
             </div>
 
             <div id="hub-area" style="display: none;">
-
                 <input
                     type="text"
                     id="game-search"
@@ -134,7 +133,6 @@
                 </div>
 
                 <div id="game-list"></div>
-
             </div>
         </div>
     </div>
