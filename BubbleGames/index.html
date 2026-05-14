@@ -19,15 +19,23 @@
     <style>
         /* Ensuring the images fit the existing text sizes */
         .brand-img-main {
-            height: 80px; /* Matches the size of the original H1 area */
-            width: auto;
             display: block;
             margin: 0 auto;
-        }
-        .brand-img-corner {
-            height: 30px; /* Matches the size of the corner-brand text */
+            max-height: 80px;
+            max-width: 100%;
             width: auto;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .brand-img-corner {
+            display: inline-block;
+            max-height: 30px;
+            max-width: 100%;
+            width: auto;
+            height: auto;
             vertical-align: middle;
+            object-fit: contain;
         }
     </style>
 </head>
