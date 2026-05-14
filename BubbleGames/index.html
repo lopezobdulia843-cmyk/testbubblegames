@@ -17,22 +17,20 @@
 
     <link rel="stylesheet" href="static/style.css">
     <style>
-        /* Ensuring the images fit the existing text sizes */
+        /* Bigger logo fix */
         .brand-img-main {
             display: block;
             margin: 0 auto;
-            max-height: 80px;
+            width: 280px;
             max-width: 100%;
-            width: auto;
             height: auto;
             object-fit: contain;
         }
 
         .brand-img-corner {
             display: inline-block;
-            max-height: 30px;
+            width: 140px;
             max-width: 100%;
-            width: auto;
             height: auto;
             vertical-align: middle;
             object-fit: contain;
@@ -42,7 +40,6 @@
 <body>
 
     <div class="corner-brand">
-        <!-- Replace top-left text with Logo -->
         <img src="BubbleGames-logo.png" alt="🫧 BubbleGames" class="brand-img-corner" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline'">
         <span style="display:none;">🫧 Bubble<span class="brand-pink">Games</span></span>
     </div>
@@ -57,7 +54,6 @@
 
         <div class="bubble-card">
             <div class="brand">
-                <!-- Replace middle logo text with Logo -->
                 <img src="BubbleGames-logo.png" alt="Bubble Games" class="brand-img-main" onerror="this.outerHTML='<span class=\'bubble-icon\'>🫧</span><h1>Bubble<span>Games</span></h1>'">
             </div>
 
