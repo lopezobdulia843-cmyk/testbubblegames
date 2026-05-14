@@ -7,82 +7,35 @@
 
     <script>
         // FORCED RESET: Clears the "ghosts" once and then marks it as clean
-        if (!localStorage.getItem('ghosts_cleared_v5')) {
+        if (!localStorage.getItem('ghosts_cleared_v2')) {
             localStorage.clear();
             sessionStorage.clear();
-            localStorage.setItem('ghosts_cleared_v5', 'true');
+            localStorage.setItem('ghosts_cleared_v2', 'true');
             window.location.reload(); 
         }
     </script>
 
     <link rel="stylesheet" href="static/style.css">
     <style>
-        /* Scaling fix */
+        /* Ensuring the images fit the existing text sizes */
         .brand-img-main {
+            height: 80px; /* Matches the size of the original H1 area */
+            width: auto;
             display: block;
             margin: 0 auto;
-            width: 100%;
-            max-width: 280px;
-            height: auto;
-            object-fit: contain;
         }
-
         .brand-img-corner {
-            height: 60px;
+            height: 30px; /* Matches the size of the corner-brand text */
             width: auto;
             vertical-align: middle;
-            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1));
-        }
-
-        /* The Centering & No-Scroll Fix */
-        .main-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100dvh;
-            width: 100%;
-            overflow: hidden;
-            box-sizing: border-box;
-        }
-
-        .page-welcome {
-            margin: 0 0 15px 0 !important; 
-            font-size: 2.2rem;
-            font-weight: bold;
-            color: #5b5be3;
-        }
-        
-        .bubble-card {
-            margin-top: 0 !important;
-            padding: 20px !important;
-            display: grid !important;
-            grid-template-rows: auto auto; 
-            gap: 10px;
-            width: min(380px, 90vw);
-            height: fit-content !important;
-            max-height: 85vh;
-            overflow-y: auto;
-        }
-
-        .brand {
-            margin-bottom: 5px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        #auth-area {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
         }
     </style>
 </head>
 <body>
 
     <div class="corner-brand">
-        <img src="BubbleGames-logo.png" alt="BubbleGames" class="brand-img-corner" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline'">
+        <!-- Replace top-left text with Logo -->
+        <img src="BubbleGames-logo.png" alt="🫧 BubbleGames" class="brand-img-corner" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline'">
         <span style="display:none;">🫧 Bubble<span class="brand-pink">Games</span></span>
     </div>
 
@@ -96,33 +49,68 @@
 
         <div class="bubble-card">
             <div class="brand">
-                <img src="BubbleGames-logo.png" id="main-logo" alt="Bubble Games" class="brand-img-main" onerror="this.outerHTML='<span class=\'bubble-icon\'>🫧</span><h1>Bubble<span>Games</span></h1>'">
+                <!-- Replace middle logo text with Logo -->
+                <img src="BubbleGames-logo.png" alt="Bubble Games" class="brand-img-main" onerror="this.outerHTML='<span class=\'bubble-icon\'>🫧</span><h1>Bubble<span>Games</span></h1>'">
             </div>
 
             <div id="auth-area">
                 <div class="input-area">
                     <input type="text" id="username" placeholder="Username" class="bouncy-input">
+
                     <div class="password-group">
                         <input type="password" id="password" placeholder="Password" class="bouncy-input">
-                        <a href="#" class="forgot-link" id="forgot-pass">Forgot Password?</a>
+
+                        <a href="#" class="forgot-link" id="forgot-pass">
+                            Forgot Password?
+                        </a>
                     </div>
                 </div>
 
                 <div id="loader" class="loader"></div>
-                <button class="go-btn" id="main-button" onclick="handleAuth()">🫧 Let's Play! 🫧</button>
+
+                <button class="go-btn" id="main-button" onclick="handleAuth()">
+                    🫧 Let's Play! 🫧
+                </button>
 
                 <div class="footer-links">
-                    <p id="toggle-container">New here? <a href="#" class="signup-link" onclick="switchMode()">Sign Up!</a></p>
+                    <p id="toggle-container">
+                        New here?
+                        <a href="#" class="signup-link" onclick="switchMode()">
+                            Sign Up!
+                        </a>
+                    </p>
                 </div>
             </div>
 
             <div id="hub-area" style="display: none;">
-                <input type="text" id="game-search" placeholder="What would you like to play? 🔍" class="bouncy-input">
+
+                <input
+                    type="text"
+                    id="game-search"
+                    placeholder="What would you like to play? 🔍"
+                    class="bouncy-input"
+                >
+
                 <div class="tab-menu">
-                    <button id="tab-global" class="tab-btn active" onclick="switchTab('global')">Global Games</button>
-                    <button id="tab-mine" class="tab-btn" onclick="switchTab('mine')">My Games</button>
+                    <button
+                        id="tab-global"
+                        class="tab-btn active"
+                        onclick="switchTab('global')"
+                    >
+                        Global Games
+                    </button>
+
+                    <button
+                        id="tab-mine"
+                        class="tab-btn"
+                        onclick="switchTab('mine')"
+                    >
+                        My Games
+                    </button>
                 </div>
+
                 <div id="game-list"></div>
+
             </div>
         </div>
     </div>
