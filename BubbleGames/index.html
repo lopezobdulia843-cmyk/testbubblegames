@@ -19,11 +19,14 @@
     <style>
         /* Scaling fix */
         .brand-img-main {
-            width: 80% !important;
-            height: auto;
             display: block;
             margin: 0 auto;
+            width: 100%;
+            max-width: 280px;
+            height: auto;
+            object-fit: contain;
         }
+
         .brand-img-corner {
             height: 60px;
             width: auto;
@@ -36,10 +39,10 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center; /* Keeps it perfectly centered */
-            height: 100dvh; /* Dynamic viewport height to prevent scrolling */
+            justify-content: center;
+            height: 100dvh;
             width: 100%;
-            overflow: hidden; /* Kills the scrollbar from image_5579bb.png */
+            overflow: hidden;
             box-sizing: border-box;
         }
 
@@ -56,14 +59,24 @@
             display: grid !important;
             grid-template-rows: auto auto; 
             gap: 10px;
-            width: 380px;
-            height: fit-content !important; /* Box only grows to fit the content */
+            width: min(380px, 90vw);
+            height: fit-content !important;
             max-height: 85vh;
             overflow-y: auto;
         }
 
-        .brand { margin-bottom: 5px; }
-        #auth-area { display: flex; flex-direction: column; gap: 10px; }
+        .brand {
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #auth-area {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
     </style>
 </head>
 <body>
