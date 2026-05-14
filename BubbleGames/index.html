@@ -18,7 +18,7 @@
     <style>
         .brand-img-main {
             display: block;
-            margin: -35px auto 0 auto; /* pulls image upward to hide blank PNG space */
+            margin: -10px auto 0 auto; /* reduced so it doesn't clip */
             width: 280px;
             max-width: 100%;
             height: auto;
@@ -27,7 +27,7 @@
 
         .brand-img-corner {
             display: block;
-            width: 200px; /* made bigger */
+            width: 220px; /* slightly bigger */
             height: auto;
             object-fit: contain;
         }
@@ -41,13 +41,13 @@
 
         .brand {
             margin: 0 !important;
-            padding: 0 !important;
+            padding: 5px 0 !important;
             line-height: 0;
-            overflow: hidden; /* hides extra blank image space */
+            overflow: visible; /* FIX: prevents cutting logo */
         }
 
         .bubble-card {
-            padding-top: 5px !important; /* less forehead */
+            padding-top: 5px !important;
         }
     </style>
 </head>
