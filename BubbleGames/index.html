@@ -6,7 +6,6 @@
     <title>Bubble Games | Welcome</title>
 
     <script>
-        // FORCED RESET: Clears the "ghosts" once and then marks it as clean
         if (!localStorage.getItem('ghosts_cleared_v2')) {
             localStorage.clear();
             sessionStorage.clear();
@@ -17,7 +16,6 @@
 
     <link rel="stylesheet" href="static/style.css">
     <style>
-        /* Bigger logo fix */
         .brand-img-main {
             display: block;
             margin: 0 auto;
@@ -28,19 +26,37 @@
         }
 
         .brand-img-corner {
-            display: inline-block;
+            display: block;
             width: 140px;
-            max-width: 100%;
             height: auto;
-            vertical-align: middle;
             object-fit: contain;
+        }
+
+        /* remove top-left box look */
+        .corner-brand {
+            background: transparent !important;
+            box-shadow: none !important;
+            border: none !important;
+            padding: 0 !important;
+        }
+
+        /* fix giant forehead space */
+        .brand {
+            margin: 0 !important;
+            padding: 0 !important;
+            line-height: 0;
+        }
+
+        .bubble-card {
+            padding-top: 15px !important;
         }
     </style>
 </head>
 <body>
 
     <div class="corner-brand">
-        <img src="BubbleGames-logo.png" alt="🫧 BubbleGames" class="brand-img-corner" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline'">
+        <img src="BubbleGames-logo.png" alt="BubbleGames" class="brand-img-corner"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='inline'">
         <span style="display:none;">🫧 Bubble<span class="brand-pink">Games</span></span>
     </div>
 
@@ -54,7 +70,8 @@
 
         <div class="bubble-card">
             <div class="brand">
-                <img src="BubbleGames-logo.png" alt="Bubble Games" class="brand-img-main" onerror="this.outerHTML='<span class=\'bubble-icon\'>🫧</span><h1>Bubble<span>Games</span></h1>'">
+                <img src="BubbleGames-logo.png" alt="Bubble Games" class="brand-img-main"
+                     onerror="this.outerHTML='<span class=\'bubble-icon\'>🫧</span><h1>Bubble<span>Games</span></h1>'">
             </div>
 
             <div id="auth-area">
@@ -63,10 +80,7 @@
 
                     <div class="password-group">
                         <input type="password" id="password" placeholder="Password" class="bouncy-input">
-
-                        <a href="#" class="forgot-link" id="forgot-pass">
-                            Forgot Password?
-                        </a>
+                        <a href="#" class="forgot-link" id="forgot-pass">Forgot Password?</a>
                     </div>
                 </div>
 
@@ -79,15 +93,12 @@
                 <div class="footer-links">
                     <p id="toggle-container">
                         New here?
-                        <a href="#" class="signup-link" onclick="switchMode()">
-                            Sign Up!
-                        </a>
+                        <a href="#" class="signup-link" onclick="switchMode()">Sign Up!</a>
                     </p>
                 </div>
             </div>
 
             <div id="hub-area" style="display: none;">
-
                 <input
                     type="text"
                     id="game-search"
@@ -96,25 +107,16 @@
                 >
 
                 <div class="tab-menu">
-                    <button
-                        id="tab-global"
-                        class="tab-btn active"
-                        onclick="switchTab('global')"
-                    >
+                    <button id="tab-global" class="tab-btn active" onclick="switchTab('global')">
                         Global Games
                     </button>
 
-                    <button
-                        id="tab-mine"
-                        class="tab-btn"
-                        onclick="switchTab('mine')"
-                    >
+                    <button id="tab-mine" class="tab-btn" onclick="switchTab('mine')">
                         My Games
                     </button>
                 </div>
 
                 <div id="game-list"></div>
-
             </div>
         </div>
     </div>
