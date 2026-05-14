@@ -16,18 +16,19 @@
 
     <link rel="stylesheet" href="static/style.css">
     <style>
+        /* RESPONSIVE LOGO (main) */
         .brand-img-main {
             display: block;
-            margin: -10px auto 0 auto; /* reduced so it doesn't clip */
-            width: 280px;
-            max-width: 100%;
+            margin: -10px auto 0 auto;
+            width: min(280px, 70vw);
             height: auto;
             object-fit: contain;
         }
 
+        /* RESPONSIVE CORNER LOGO */
         .brand-img-corner {
             display: block;
-            width: 220px; /* slightly bigger */
+            width: clamp(120px, 18vw, 220px);
             height: auto;
             object-fit: contain;
         }
@@ -43,11 +44,25 @@
             margin: 0 !important;
             padding: 5px 0 !important;
             line-height: 0;
-            overflow: visible; /* FIX: prevents cutting logo */
+            overflow: visible;
         }
 
+        /* SMALL "FOREHEAD" + RESPONSIVE BOX */
         .bubble-card {
-            padding-top: 5px !important;
+            padding-top: clamp(12px, 2vh, 20px) !important;
+            padding-left: 15px;
+            padding-right: 15px;
+            width: min(380px, 92vw);
+        }
+
+        /* RESPONSIVE TEXT INPUT AREA */
+        .input-area, .password-group {
+            width: 100%;
+        }
+
+        .bouncy-input {
+            width: 100%;
+            box-sizing: border-box;
         }
     </style>
 </head>
