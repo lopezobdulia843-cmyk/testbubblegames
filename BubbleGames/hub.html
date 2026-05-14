@@ -45,16 +45,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding-top: 15px;
+            padding-top: 30px;
             gap: 25px;
             z-index: 10;
-        }
-
-        /* LOGO FIX */
-        .sidebar-logo {
-            width: 85px;
-            height: auto;
-            object-fit: contain;
         }
 
         .side-icon {
@@ -130,7 +123,6 @@
         }
 
         .market-card:hover { transform: translateY(-10px); border-color: var(--text-main); box-shadow: 0 15px 30px var(--shadow); }
-
         .market-icon { font-size: 55px; display: block; margin-bottom: 10px; }
 
         /* NO GAMES MESSAGE */
@@ -224,10 +216,7 @@
             letter-spacing: 2px;
         }
 
-        .play-btn:active {
-            transform: translateY(8px);
-            box-shadow: 0 2px 0 #3730a3;
-        }
+        .play-btn:active { transform: translateY(8px); box-shadow: 0 2px 0 #3730a3; }
 
         /* LOGOUT BUTTON */
         .logout-btn {
@@ -250,21 +239,18 @@
 
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 
-        /* LOGO ADDED FIX */
-        .sidebar-logo {
-            width: 85px;
-            height: auto;
-            object-fit: contain;
-        }
+        /* TOGGLE SWITCH */
+        .switch { position: relative; display: inline-block; width: 60px; height: 34px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #ec4899; }
+        input:checked + .slider:before { transform: translateX(26px); }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
-
-        <!-- ONLY ADDITION -->
-        <img src="BubbleGames-logo.png" class="sidebar-logo" alt="BubbleGames">
-
         <div id="nav-home" class="side-icon active" onclick="switchTab('home')">🏠</div>
         <div id="nav-create" class="side-icon" onclick="switchTab('create')">🧱</div>
         <div id="nav-settings" class="side-icon" onclick="switchTab('settings')">⚙️</div>
