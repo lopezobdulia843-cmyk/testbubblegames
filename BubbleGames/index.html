@@ -18,7 +18,7 @@
     <style>
         .brand-img-main {
             display: block;
-            margin: 0 auto;
+            margin: -35px auto 0 auto; /* pulls image upward to hide blank PNG space */
             width: 280px;
             max-width: 100%;
             height: auto;
@@ -27,12 +27,11 @@
 
         .brand-img-corner {
             display: block;
-            width: 140px;
+            width: 200px; /* made bigger */
             height: auto;
             object-fit: contain;
         }
 
-        /* remove top-left box look */
         .corner-brand {
             background: transparent !important;
             box-shadow: none !important;
@@ -40,15 +39,15 @@
             padding: 0 !important;
         }
 
-        /* fix giant forehead space */
         .brand {
             margin: 0 !important;
             padding: 0 !important;
             line-height: 0;
+            overflow: hidden; /* hides extra blank image space */
         }
 
         .bubble-card {
-            padding-top: 15px !important;
+            padding-top: 5px !important; /* less forehead */
         }
     </style>
 </head>
