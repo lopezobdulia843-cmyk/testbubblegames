@@ -45,9 +45,22 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding-top: 30px;
+            padding-top: 20px; /* Reduced to make room for logo */
             gap: 25px;
             z-index: 10;
+        }
+
+        /* LOGO STYLES */
+        .logo-container {
+            width: 70px;
+            margin-bottom: 10px;
+            transition: 0.3s;
+        }
+
+        .hub-logo {
+            width: 100%;
+            height: auto;
+            filter: drop-shadow(0 4px 8px var(--shadow));
         }
 
         .side-icon {
@@ -251,6 +264,10 @@
 <body>
 
     <div class="sidebar">
+        <div class="logo-container">
+            <img src="BubbleGames-logo.png" alt="Bubble Games" class="hub-logo">
+        </div>
+
         <div id="nav-home" class="side-icon active" onclick="switchTab('home')">🏠</div>
         <div id="nav-create" class="side-icon" onclick="switchTab('create')">🧱</div>
         <div id="nav-settings" class="side-icon" onclick="switchTab('settings')">⚙️</div>
