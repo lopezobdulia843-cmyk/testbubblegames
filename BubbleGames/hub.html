@@ -37,6 +37,22 @@
             transition: background 0.3s ease;
         }
 
+        /* LOGO POSITIONED NEAR SIDEBAR */
+        .logo-container {
+            position: absolute;
+            top: 15px;
+            left: 105px; /* Sits just to the right of the 90px sidebar */
+            width: 70px;
+            z-index: 20;
+            pointer-events: none; /* Let clicks pass through if needed */
+        }
+
+        .hub-logo {
+            width: 100%;
+            height: auto;
+            filter: drop-shadow(0 4px 8px var(--shadow));
+        }
+
         /* SIDEBAR */
         .sidebar {
             width: 90px;
@@ -45,22 +61,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding-top: 20px; /* Reduced to make room for logo */
+            padding-top: 30px; 
             gap: 25px;
             z-index: 10;
-        }
-
-        /* LOGO STYLES */
-        .logo-container {
-            width: 70px;
-            margin-bottom: 10px;
-            transition: 0.3s;
-        }
-
-        .hub-logo {
-            width: 100%;
-            height: auto;
-            filter: drop-shadow(0 4px 8px var(--shadow));
         }
 
         .side-icon {
@@ -263,11 +266,11 @@
 </head>
 <body>
 
-    <div class="sidebar">
-        <div class="logo-container">
-            <img src="BubbleGames-logo.png" alt="Bubble Games" class="hub-logo">
-        </div>
+    <div class="logo-container">
+        <img src="BubbleGames-logo.png" alt="Bubble Games" class="hub-logo">
+    </div>
 
+    <div class="sidebar">
         <div id="nav-home" class="side-icon active" onclick="switchTab('home')">🏠</div>
         <div id="nav-create" class="side-icon" onclick="switchTab('create')">🧱</div>
         <div id="nav-settings" class="side-icon" onclick="switchTab('settings')">⚙️</div>
