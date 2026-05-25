@@ -6,7 +6,6 @@ import { doc, getDoc, collection, addDoc, serverTimestamp, query, orderBy, onSna
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         const welcomeText = document.getElementById('welcome-text');
-        
         const emailPrefix = user.email ? user.email.split('@')[0] : "Player";
         if (welcomeText) welcomeText.innerText = `Welcome back, ${emailPrefix}! ✨`;
 
@@ -14,22 +13,17 @@ onAuthStateChanged(auth, async (user) => {
             try {
                 const docRef = doc(db, "profiles", uid);
                 const docSnap = await getDoc(docRef);
-                
-                if (docSnap.exists()) {
-                    return docSnap.data().username;
-                } else if (attempts < 3) {
+                if (docSnap.exists()) return docSnap.data().username;
+                else if (attempts < 3) {
                     await new Promise(resolve => setTimeout(resolve, 1000));
                     return getUsername(uid, attempts + 1);
                 }
-            } catch (err) {
-                console.error("Firestore lookup failed:", err);
-            }
+            } catch (err) { console.error("Firestore lookup failed:", err); }
             return emailPrefix; 
         };
 
         const displayName = await getUsername(user.uid);
         if (welcomeText) welcomeText.innerText = `Welcome back, ${displayName}! ✨`;
-        
         window.currentUsername = displayName;
         
         loadGlobalGames();
@@ -74,9 +68,7 @@ window.handleLogout = async () => {
     try {
         await signOut(auth);
         window.location.replace('index.html');
-    } catch (error) {
-        console.error("Logout failed", error);
-    }
+    } catch (error) { console.error("Logout failed", error); }
 };
 
 // --- 4. TABS & PANELS ---
@@ -93,7 +85,6 @@ window.switchTab = (tabName) => {
 
     document.getElementById('view-' + tabName).style.display = 'flex';
     document.getElementById('nav-' + tabName).classList.add('active');
-
     window.closePanel();
 };
 
@@ -110,6 +101,12 @@ window.sendMessage = async () => {
     const text = input.value.trim();
     if (text === "") return;
 
+    // Enforce 50 character limit
+    if (text.length > 50) {
+        alert("Text too long! Max 50 characters allowed.");
+        return;
+    }
+
     // 1. Add the new message
     await addDoc(chatCollection, {
         text: text,
@@ -118,17 +115,18 @@ window.sendMessage = async () => {
     });
     input.value = "";
 
-    // 2. AUTO-CLEANUP
+    // 2. AUTO-CLEANUP (Limit to 21 total in DB)
     const cleanupQuery = query(chatCollection, orderBy("createdAt", "asc"));
     const snapshot = await getDocs(cleanupQuery);
     
-    if (snapshot.size > 50) {
+    if (snapshot.size > 21) {
         const oldestDoc = snapshot.docs[0];
         await deleteDoc(oldestDoc.ref);
     }
 };
 
-const chatQuery = query(chatCollection, orderBy("createdAt", "asc"), limitToLast(50));
+// Pull last 21 for display
+const chatQuery = query(chatCollection, orderBy("createdAt", "asc"), limitToLast(21));
 
 onSnapshot(chatQuery, (snapshot) => {
     const chatBox = document.getElementById('chat-messages');
