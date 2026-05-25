@@ -106,6 +106,8 @@ window.toggleDarkMode = () => {
 };
 
 // --- 5. CHAT ROOM LOGIC ---
+import { getDocs, deleteDoc, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"; // ADD THESE TO YOUR IMPORTS AT THE TOP
+
 const chatCollection = collection(db, "global-chat");
 
 window.sendMessage = async () => {
@@ -113,15 +115,27 @@ window.sendMessage = async () => {
     const text = input.value.trim();
     if (text === "") return;
 
+    // 1. Add the new message
     await addDoc(chatCollection, {
         text: text,
         username: window.currentUsername || "Player",
         createdAt: serverTimestamp()
     });
     input.value = "";
+
+    // 2. AUTO-CLEANUP: Check if we have more than 50 messages
+    const cleanupQuery = query(chatCollection, orderBy("createdAt", "asc"));
+    const snapshot = await getDocs(cleanupQuery);
+    
+    if (snapshot.size > 50) {
+        // Find the oldest message and delete it!
+        const oldestDoc = snapshot.docs[0];
+        await deleteDoc(oldestDoc.ref);
+    }
 };
 
-const chatQuery = query(chatCollection, orderBy("createdAt", "asc"));
+const chatQuery = query(chatCollection, orderBy("createdAt", "asc"), limitToLast(50));
+
 onSnapshot(chatQuery, (snapshot) => {
     const chatBox = document.getElementById('chat-messages');
     if (!chatBox) return;
