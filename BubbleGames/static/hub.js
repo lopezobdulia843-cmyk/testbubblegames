@@ -1,17 +1,15 @@
 import { auth, db } from './firebase-config.js';
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { doc, getDoc, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { doc, getDoc, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, limitToLast, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // --- 1. ONLY SHOW DATA (NO KICKING) ---
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         const welcomeText = document.getElementById('welcome-text');
         
-        // Instant Fallback: Use the name from the email (e.g., Abraham) while we wait for Firestore
         const emailPrefix = user.email ? user.email.split('@')[0] : "Player";
         if (welcomeText) welcomeText.innerText = `Welcome back, ${emailPrefix}! ✨`;
 
-        // Function to fetch the actual Firestore username
         const getUsername = async (uid, attempts = 0) => {
             try {
                 const docRef = doc(db, "profiles", uid);
@@ -32,7 +30,6 @@ onAuthStateChanged(auth, async (user) => {
         const displayName = await getUsername(user.uid);
         if (welcomeText) welcomeText.innerText = `Welcome back, ${displayName}! ✨`;
         
-        // Save display name for chat use
         window.currentUsername = displayName;
         
         loadGlobalGames();
@@ -106,8 +103,6 @@ window.toggleDarkMode = () => {
 };
 
 // --- 5. CHAT ROOM LOGIC ---
-import { getDocs, deleteDoc, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"; // ADD THESE TO YOUR IMPORTS AT THE TOP
-
 const chatCollection = collection(db, "global-chat");
 
 window.sendMessage = async () => {
@@ -123,12 +118,11 @@ window.sendMessage = async () => {
     });
     input.value = "";
 
-    // 2. AUTO-CLEANUP: Check if we have more than 50 messages
+    // 2. AUTO-CLEANUP
     const cleanupQuery = query(chatCollection, orderBy("createdAt", "asc"));
     const snapshot = await getDocs(cleanupQuery);
     
     if (snapshot.size > 50) {
-        // Find the oldest message and delete it!
         const oldestDoc = snapshot.docs[0];
         await deleteDoc(oldestDoc.ref);
     }
