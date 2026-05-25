@@ -50,7 +50,7 @@ async function loadGlobalGames() {
     if (!globalGrid) return;
 
     const games = [
-     
+       
     ];
 
     if (games.length === 0) {
@@ -88,14 +88,22 @@ window.handleLogout = async () => {
 };
 
 // --- 4. TABS & PANELS ---
-window.switchTab = (t) => {
-    const v = ['view-home', 'view-create', 'view-settings'];
-    v.forEach(id => { if(document.getElementById(id)) document.getElementById(id).style.display = 'none'; });
-    if(document.getElementById(`view-${t}`)) document.getElementById(`view-${t}`).style.display = 'flex';
+window.switchTab = (tabName) => {
+    // 1. Hide all views
+    document.getElementById('view-home').style.display = 'none';
+    document.getElementById('view-create').style.display = 'none';
+    document.getElementById('view-settings').style.display = 'none';
+    document.getElementById('view-chat').style.display = 'none'; 
 
-    const icons = ['nav-home', 'nav-create', 'nav-settings'];
-    icons.forEach(id => { if(document.getElementById(id)) document.getElementById(id).classList.remove('active'); });
-    if(document.getElementById(`nav-${t}`)) document.getElementById(`nav-${t}`).classList.add('active');
+    // 2. Remove 'active' from all nav icons
+    document.getElementById('nav-home').classList.remove('active');
+    document.getElementById('nav-create').classList.remove('active');
+    document.getElementById('nav-settings').classList.remove('active');
+    document.getElementById('nav-chat').classList.remove('active'); 
+
+    // 3. Show the one you clicked!
+    document.getElementById('view-' + tabName).style.display = 'flex';
+    document.getElementById('nav-' + tabName).classList.add('active');
 
     window.closePanel();
 };
