@@ -1,6 +1,6 @@
 import { auth, db } from './firebase-config.js';
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { doc, getDoc, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // --- 1. ONLY SHOW DATA (NO KICKING) ---
 onAuthStateChanged(auth, async (user) => {
@@ -26,16 +26,18 @@ onAuthStateChanged(auth, async (user) => {
             } catch (err) {
                 console.error("Firestore lookup failed:", err);
             }
-            return emailPrefix; // Use email prefix instead of "Player" if Firestore fails
+            return emailPrefix; 
         };
 
         const displayName = await getUsername(user.uid);
         if (welcomeText) welcomeText.innerText = `Welcome back, ${displayName}! ✨`;
         
+        // Save display name for chat use
+        window.currentUsername = displayName;
+        
         loadGlobalGames();
         loadUserGames(); 
 
-        // Apply saved theme on login
         if (localStorage.getItem('bubbleTheme') === 'dark') {
             document.body.classList.add('dark-theme');
             const toggle = document.getElementById('darkToggle');
@@ -48,16 +50,11 @@ onAuthStateChanged(auth, async (user) => {
 async function loadGlobalGames() {
     const globalGrid = document.getElementById('global-game-grid');
     if (!globalGrid) return;
-
-    const games = [
-       
-    ];
-
+    const games = [];
     if (games.length === 0) {
         globalGrid.innerHTML = `<p class="no-games">No games here! Time to start creating? 🫧</p>`;
         return;
     }
-
     globalGrid.innerHTML = games.map(g => `
         <div class="market-card" onclick="openPanel('${g.name}', '${g.icon}', '${g.desc}')">
             <span class="market-icon">${g.icon}</span>
@@ -69,9 +66,7 @@ async function loadGlobalGames() {
 async function loadUserGames() {
     const userGrid = document.getElementById('owned-game-grid'); 
     if (!userGrid) return;
-    
     const userGames = []; 
-
     if (userGames.length === 0) {
         userGrid.innerHTML = `<p class="no-games">You haven't created any games yet. Start creating! 🚀</p>`;
     }
@@ -89,19 +84,16 @@ window.handleLogout = async () => {
 
 // --- 4. TABS & PANELS ---
 window.switchTab = (tabName) => {
-    // 1. Hide all views
     document.getElementById('view-home').style.display = 'none';
     document.getElementById('view-create').style.display = 'none';
     document.getElementById('view-settings').style.display = 'none';
     document.getElementById('view-chat').style.display = 'none'; 
 
-    // 2. Remove 'active' from all nav icons
     document.getElementById('nav-home').classList.remove('active');
     document.getElementById('nav-create').classList.remove('active');
     document.getElementById('nav-settings').classList.remove('active');
     document.getElementById('nav-chat').classList.remove('active'); 
 
-    // 3. Show the one you clicked!
     document.getElementById('view-' + tabName).style.display = 'flex';
     document.getElementById('nav-' + tabName).classList.add('active');
 
@@ -112,6 +104,34 @@ window.toggleDarkMode = () => {
     const isDark = document.body.classList.toggle('dark-theme');
     localStorage.setItem('bubbleTheme', isDark ? 'dark' : 'light');
 };
+
+// --- 5. CHAT ROOM LOGIC ---
+const chatCollection = collection(db, "global-chat");
+
+window.sendMessage = async () => {
+    const input = document.getElementById('chat-input');
+    const text = input.value.trim();
+    if (text === "") return;
+
+    await addDoc(chatCollection, {
+        text: text,
+        username: window.currentUsername || "Player",
+        createdAt: serverTimestamp()
+    });
+    input.value = "";
+};
+
+const chatQuery = query(chatCollection, orderBy("createdAt", "asc"));
+onSnapshot(chatQuery, (snapshot) => {
+    const chatBox = document.getElementById('chat-messages');
+    if (!chatBox) return;
+    chatBox.innerHTML = ""; 
+    snapshot.forEach((doc) => {
+        const data = doc.data();
+        chatBox.innerHTML += `<div><strong>${data.username}:</strong> ${data.text}</div>`;
+    });
+    chatBox.scrollTop = chatBox.scrollHeight; 
+});
 
 window.openPanel = (n, i, d) => {
     document.getElementById('panelTitle').innerText = n;
