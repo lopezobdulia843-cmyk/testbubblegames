@@ -93,7 +93,7 @@ window.toggleDarkMode = () => {
     localStorage.setItem('bubbleTheme', isDark ? 'dark' : 'light');
 };
 
-// --- 5. CHAT ROOM LOGIC ---
+// --- 5. CHAT ROOM LOGIC (Limit to 20) ---
 const chatCollection = collection(db, "global-chat");
 
 window.sendMessage = async () => {
@@ -101,13 +101,13 @@ window.sendMessage = async () => {
     const text = input.value.trim();
     if (text === "") return;
 
-    // Enforce 50 character limit
+    // 1. Enforce 50 character limit
     if (text.length > 50) {
         alert("Text too long! Max 50 characters allowed.");
         return;
     }
 
-    // 1. Add the new message
+    // 2. Add the new message
     await addDoc(chatCollection, {
         text: text,
         username: window.currentUsername || "Player",
@@ -115,18 +115,20 @@ window.sendMessage = async () => {
     });
     input.value = "";
 
-    // 2. AUTO-CLEANUP (Limit to 21 total in DB)
+    // 3. AUTO-CLEANUP (Ensure only 20 messages exist in total)
+    // We fetch them sorted by time, oldest first
     const cleanupQuery = query(chatCollection, orderBy("createdAt", "asc"));
     const snapshot = await getDocs(cleanupQuery);
     
-    if (snapshot.size > 21) {
-        const oldestDoc = snapshot.docs[0];
-        await deleteDoc(oldestDoc.ref);
+    // While there are more than 20, keep deleting the oldest one
+    let docsToDelete = snapshot.size - 20;
+    for (let i = 0; i < docsToDelete; i++) {
+        await deleteDoc(snapshot.docs[i].ref);
     }
 };
 
-// Pull last 21 for display
-const chatQuery = query(chatCollection, orderBy("createdAt", "asc"), limitToLast(21));
+// Pull last 20 for display
+const chatQuery = query(chatCollection, orderBy("createdAt", "asc"), limitToLast(20));
 
 onSnapshot(chatQuery, (snapshot) => {
     const chatBox = document.getElementById('chat-messages');
