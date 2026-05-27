@@ -96,26 +96,12 @@ window.toggleDarkMode = () => {
 // --- 5. CHAT ROOM LOGIC WITH GOOMBER AI BOT ---
 const chatCollection = collection(db, "global-chat");
 let toxicityModel = null;
-let isBotReady = false;
 
+// Load the AI "Bot" once when the page starts
 async function initGoomberBot() {
-    // Safety check: wait until the toxicity library is actually loaded
-    if (typeof toxicity === 'undefined') {
-        setTimeout(initGoomberBot, 500);
-        return;
-    }
-
-    const chatInput = document.getElementById('chat-input');
-    if (chatInput) chatInput.disabled = true;
-    
-    try {
-        toxicityModel = await toxicity.load(0.85);
-        isBotReady = true;
-        if (chatInput) chatInput.disabled = false;
-        console.log("Goomber AI Bot is online! 🫧");
-    } catch (err) {
-        console.error("Goomber failed to wake up:", err);
-    }
+    const threshold = 0.85; // 85% confidence level
+    toxicityModel = await toxicity.load(threshold);
+    console.log("Goomber AI Bot is online! 🫧");
 }
 initGoomberBot();
 
@@ -129,17 +115,15 @@ window.sendMessage = async () => {
         return;
     }
 
-    if (!isBotReady) {
-        alert("Goomber is still waking up... hold on a second! 🫧");
-        return;
-    }
-
-    const predictions = await toxicityModel.classify(text);
-    const isToxic = predictions.some(p => p.results[0].match === true);
-    
-    if (isToxic) {
-        alert("Goomber says: That message doesn't fit our community guidelines! ✨");
-        return;
+    // AI BOT CHECK
+    if (toxicityModel) {
+        const predictions = await toxicityModel.classify(text);
+        const isToxic = predictions.some(p => p.results[0].match === true);
+        
+        if (isToxic) {
+            alert("Goomber says: That message doesn't fit our community guidelines! ✨");
+            return;
+        }
     }
 
     await addDoc(chatCollection, {
@@ -149,11 +133,11 @@ window.sendMessage = async () => {
     });
     input.value = "";
 
+    // CLEANUP TO 21
     const cleanupQuery = query(chatCollection, orderBy("createdAt", "asc"));
     const snapshot = await getDocs(cleanupQuery);
     if (snapshot.size > 21) {
-        const excess = snapshot.size - 21;
-        for (let i = 0; i < excess; i++) {
+        for (let i = 0; i < (snapshot.size - 21); i++) {
             await deleteDoc(snapshot.docs[i].ref);
         }
     }
