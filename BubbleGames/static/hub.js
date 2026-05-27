@@ -93,21 +93,39 @@ window.toggleDarkMode = () => {
     localStorage.setItem('bubbleTheme', isDark ? 'dark' : 'light');
 };
 
-// --- 5. CHAT ROOM LOGIC ---
+// --- 5. CHAT ROOM LOGIC WITH GOOMBER AI BOT ---
 const chatCollection = collection(db, "global-chat");
+let toxicityModel = null;
+
+// Load the AI "Bot" once when the page starts
+async function initGoomberBot() {
+    const threshold = 0.85; // 85% confidence level
+    toxicityModel = await toxicity.load(threshold);
+    console.log("Goomber AI Bot is online! 🫧");
+}
+initGoomberBot();
 
 window.sendMessage = async () => {
     const input = document.getElementById('chat-input');
     const text = input.value.trim();
     if (text === "") return;
 
-    // Enforce 50 character limit
-    if (text.length > 50) {
-        alert("Text too long! Max 50 characters allowed.");
+    if (text.length > 100) {
+        alert("Whoa! Goomber says: Keep it under 100 characters! 🫧");
         return;
     }
 
-    // 1. Add the new message
+    // AI BOT CHECK
+    if (toxicityModel) {
+        const predictions = await toxicityModel.classify(text);
+        const isToxic = predictions.some(p => p.results[0].match === true);
+        
+        if (isToxic) {
+            alert("Goomber says: That message doesn't fit our community guidelines! ✨");
+            return;
+        }
+    }
+
     await addDoc(chatCollection, {
         text: text,
         username: window.currentUsername || "Player",
@@ -115,29 +133,15 @@ window.sendMessage = async () => {
     });
     input.value = "";
 
-    // 2. AUTO-CLEANUP (Limit to 21 total in DB)
+    // CLEANUP TO 21
     const cleanupQuery = query(chatCollection, orderBy("createdAt", "asc"));
     const snapshot = await getDocs(cleanupQuery);
-    
     if (snapshot.size > 21) {
-        const oldestDoc = snapshot.docs[0];
-        await deleteDoc(oldestDoc.ref);
+        for (let i = 0; i < (snapshot.size - 21); i++) {
+            await deleteDoc(snapshot.docs[i].ref);
+        }
     }
 };
-
-// Pull last 21 for display
-const chatQuery = query(chatCollection, orderBy("createdAt", "asc"), limitToLast(21));
-
-onSnapshot(chatQuery, (snapshot) => {
-    const chatBox = document.getElementById('chat-messages');
-    if (!chatBox) return;
-    chatBox.innerHTML = ""; 
-    snapshot.forEach((doc) => {
-        const data = doc.data();
-        chatBox.innerHTML += `<div><strong>${data.username}:</strong> ${data.text}</div>`;
-    });
-    chatBox.scrollTop = chatBox.scrollHeight; 
-});
 
 window.openPanel = (n, i, d) => {
     document.getElementById('panelTitle').innerText = n;
