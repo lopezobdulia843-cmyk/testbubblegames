@@ -99,14 +99,23 @@ let toxicityModel = null;
 let isBotReady = false;
 
 async function initGoomberBot() {
+    // Safety check: wait until the toxicity library is actually loaded
+    if (typeof toxicity === 'undefined') {
+        setTimeout(initGoomberBot, 500);
+        return;
+    }
+
     const chatInput = document.getElementById('chat-input');
-    if (chatInput) chatInput.disabled = true; // Wait until ready
+    if (chatInput) chatInput.disabled = true;
     
-    toxicityModel = await toxicity.load(0.85);
-    isBotReady = true;
-    
-    if (chatInput) chatInput.disabled = false;
-    console.log("Goomber AI Bot is online! 🫧");
+    try {
+        toxicityModel = await toxicity.load(0.85);
+        isBotReady = true;
+        if (chatInput) chatInput.disabled = false;
+        console.log("Goomber AI Bot is online! 🫧");
+    } catch (err) {
+        console.error("Goomber failed to wake up:", err);
+    }
 }
 initGoomberBot();
 
