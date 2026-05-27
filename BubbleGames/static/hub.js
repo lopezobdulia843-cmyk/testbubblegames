@@ -101,9 +101,9 @@ window.sendMessage = async () => {
     const text = input.value.trim();
     if (text === "") return;
 
-    // 1. Enforce 50 character limit
-    if (text.length > 50) {
-        alert("Text too long! Max 50 characters allowed.");
+    // 1. Enforce 100 character limit
+    if (text.length > 101) {
+        alert("Text too long! Max 100 characters allowed.");
         return;
     }
 
