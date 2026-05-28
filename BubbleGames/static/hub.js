@@ -2,6 +2,11 @@ import { auth, db } from './firebase-config.js';
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { doc, getDoc, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, limitToLast, getDocs, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+// --- 0. DYNAMICALLY LOAD FILTER LIBRARY ---
+const script = document.createElement('script');
+script.src = "https://cdn.jsdelivr.net/npm/bad-words@3.0.4/lib/badwords.min.js";
+document.head.appendChild(script);
+
 // --- 0. DARK MODE (LOAD IMMEDIATELY) ---
 if (localStorage.getItem('bubbleTheme') === 'dark') {
     document.body.classList.add('dark-theme');
@@ -77,7 +82,6 @@ const chatCollection = collection(db, "global-chat");
 async function refreshChat() {
     const chatBox = document.getElementById('chat-messages');
     if (!chatBox) return;
-    // Get oldest to newest correctly
     const q = query(chatCollection, orderBy("createdAt", "asc"), limitToLast(20));
     const snapshot = await getDocs(q);
     chatBox.innerHTML = ""; 
@@ -88,13 +92,26 @@ async function refreshChat() {
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// Listen to trigger
 onSnapshot(doc(db, "chat-metadata", "status"), () => { refreshChat(); });
 
 window.sendMessage = async () => {
     const input = document.getElementById('chat-input');
     const text = input.value.trim();
     if (text === "" || text.length > 100) return;
+
+    // --- THE FILTER ---
+    // We check if Filter exists (since it's loaded dynamically)
+    if (typeof Filter !== 'undefined') {
+        const filter = new Filter();
+        // Replace 'YourName' with your actual username to bypass filter
+        if (window.currentUsername !== "YourName") {
+            if (filter.isProfane(text)) {
+                alert("Hey! Let's keep the chat friendly! 🫧");
+                return;
+            }
+        }
+    }
+    // ------------------
 
     await addDoc(chatCollection, { text, username: window.currentUsername || "Player", createdAt: serverTimestamp() });
     input.value = "";
