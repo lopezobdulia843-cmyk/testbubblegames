@@ -2,18 +2,6 @@ import { auth, db } from './firebase-config.js';
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { doc, getDoc, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, limitToLast, getDocs, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// --- 0. DYNAMICALLY LOAD FILTER LIBRARY ---
-const script = document.createElement('script');
-script.src = "https://cdn.jsdelivr.net/npm/bad-words@3.0.4/lib/badwords.min.js";
-document.head.appendChild(script);
-
-// --- 0. DARK MODE (LOAD IMMEDIATELY) ---
-if (localStorage.getItem('bubbleTheme') === 'dark') {
-    document.body.classList.add('dark-theme');
-    const toggle = document.getElementById('darkToggle');
-    if (toggle) toggle.checked = true;
-}
-
 // --- 1. ONLY SHOW DATA ---
 onAuthStateChanged(auth, async (user) => {
     if (user) {
@@ -40,6 +28,8 @@ onAuthStateChanged(auth, async (user) => {
         
         loadGlobalGames();
         loadUserGames(); 
+        
+        // Initial manual load
         refreshChat();
     }
 });
@@ -47,27 +37,36 @@ onAuthStateChanged(auth, async (user) => {
 // --- 2. LOAD GAMES ---
 async function loadGlobalGames() {
     const globalGrid = document.getElementById('global-game-grid');
-    if (globalGrid) globalGrid.innerHTML = `<p class="no-games">No games here! Time to start creating? 🫧</p>`;
+    if (!globalGrid) return;
+    globalGrid.innerHTML = `<p class="no-games">No games here! Time to start creating? 🫧</p>`;
 }
 
 async function loadUserGames() {
     const userGrid = document.getElementById('owned-game-grid'); 
-    if (userGrid) userGrid.innerHTML = `<p class="no-games">You haven't created any games yet. Start creating! 🚀</p>`;
+    if (!userGrid) return;
+    userGrid.innerHTML = `<p class="no-games">You haven't created any games yet. Start creating! 🚀</p>`;
 }
 
 // --- 3. LOGOUT ---
 window.handleLogout = async () => {
-    try { await signOut(auth); window.location.replace('index.html'); } 
-    catch (error) { console.error("Logout failed", error); }
+    try {
+        await signOut(auth);
+        window.location.replace('index.html');
+    } catch (error) { console.error("Logout failed", error); }
 };
 
 // --- 4. TABS & PANELS ---
 window.switchTab = (tabName) => {
-    ['home', 'create', 'settings', 'chat'].forEach(view => {
-        document.getElementById('view-' + view).style.display = (view === tabName) ? 'flex' : 'none';
-        const nav = document.getElementById('nav-' + view);
-        if (nav) (view === tabName) ? nav.classList.add('active') : nav.classList.remove('active');
-    });
+    document.getElementById('view-home').style.display = 'none';
+    document.getElementById('view-create').style.display = 'none';
+    document.getElementById('view-settings').style.display = 'none';
+    document.getElementById('view-chat').style.display = 'none'; 
+    document.getElementById('nav-home').classList.remove('active');
+    document.getElementById('nav-create').classList.remove('active');
+    document.getElementById('nav-settings').classList.remove('active');
+    document.getElementById('nav-chat').classList.remove('active'); 
+    document.getElementById('view-' + tabName).style.display = 'flex';
+    document.getElementById('nav-' + tabName).classList.add('active');
     window.closePanel();
 };
 
@@ -76,49 +75,42 @@ window.toggleDarkMode = () => {
     localStorage.setItem('bubbleTheme', isDark ? 'dark' : 'light');
 };
 
-// --- 5. CHAT ROOM LOGIC ---
+// --- 5. CHAT ROOM LOGIC (HYBRID BAM TRIGGER) ---
 const chatCollection = collection(db, "global-chat");
 
+// Manual fetch for the UI
 async function refreshChat() {
     const chatBox = document.getElementById('chat-messages');
     if (!chatBox) return;
-    const q = query(chatCollection, orderBy("createdAt", "asc"), limitToLast(20));
-    const snapshot = await getDocs(q);
+    const snapshot = await getDocs(query(chatCollection, orderBy("createdAt", "desc"), limitToLast(20)));
     chatBox.innerHTML = ""; 
-    snapshot.forEach((doc) => {
+    const docs = snapshot.docs.reverse();
+    docs.forEach((doc) => {
         const data = doc.data();
         chatBox.innerHTML += `<div><strong>${data.username}:</strong> ${data.text}</div>`;
     });
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-onSnapshot(doc(db, "chat-metadata", "status"), () => { refreshChat(); });
+// Listen ONLY to the tiny trigger document (1 read total for all users)
+onSnapshot(doc(db, "chat-metadata", "status"), () => {
+    refreshChat();
+});
 
 window.sendMessage = async () => {
     const input = document.getElementById('chat-input');
     const text = input.value.trim();
     if (text === "" || text.length > 100) return;
 
-    // --- THE FILTER ---
-    // We check if Filter exists (since it's loaded dynamically)
-    if (typeof Filter !== 'undefined') {
-        const filter = new Filter();
-        // Replace 'YourName' with your actual username to bypass filter
-        if (window.currentUsername !== "YourName") {
-            if (filter.isProfane(text)) {
-                alert("Hey! Let's keep the chat friendly! 🫧");
-                return;
-            }
-        }
-    }
-    // ------------------
-
+    // Add message
     await addDoc(chatCollection, { text, username: window.currentUsername || "Player", createdAt: serverTimestamp() });
     input.value = "";
 
+    // Cleanup
     const snapshot = await getDocs(query(chatCollection, orderBy("createdAt", "asc")));
     if (snapshot.size > 20) await deleteDoc(snapshot.docs[0].ref);
-    
+
+    // BAM! Trigger the update for everyone else
     await setDoc(doc(db, "chat-metadata", "status"), { lastUpdated: serverTimestamp() });
 };
 
