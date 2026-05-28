@@ -1,8 +1,8 @@
 import { auth, db } from './firebase-config.js';
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { doc, getDoc, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, limitToLast, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { doc, getDoc, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, limitToLast, getDocs, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// --- 1. ONLY SHOW DATA (NO KICKING) ---
+// --- 1. ONLY SHOW DATA ---
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         const welcomeText = document.getElementById('welcome-text');
@@ -28,12 +28,9 @@ onAuthStateChanged(auth, async (user) => {
         
         loadGlobalGames();
         loadUserGames(); 
-
-        if (localStorage.getItem('bubbleTheme') === 'dark') {
-            document.body.classList.add('dark-theme');
-            const toggle = document.getElementById('darkToggle');
-            if (toggle) toggle.checked = true;
-        }
+        
+        // Initial manual load
+        refreshChat();
     }
 });
 
@@ -41,26 +38,13 @@ onAuthStateChanged(auth, async (user) => {
 async function loadGlobalGames() {
     const globalGrid = document.getElementById('global-game-grid');
     if (!globalGrid) return;
-    const games = [];
-    if (games.length === 0) {
-        globalGrid.innerHTML = `<p class="no-games">No games here! Time to start creating? 🫧</p>`;
-        return;
-    }
-    globalGrid.innerHTML = games.map(g => `
-        <div class="market-card" onclick="openPanel('${g.name}', '${g.icon}', '${g.desc}')">
-            <span class="market-icon">${g.icon}</span>
-            <h3>${g.name}</h3>
-        </div>
-    `).join('');
+    globalGrid.innerHTML = `<p class="no-games">No games here! Time to start creating? 🫧</p>`;
 }
 
 async function loadUserGames() {
     const userGrid = document.getElementById('owned-game-grid'); 
     if (!userGrid) return;
-    const userGames = []; 
-    if (userGames.length === 0) {
-        userGrid.innerHTML = `<p class="no-games">You haven't created any games yet. Start creating! 🚀</p>`;
-    }
+    userGrid.innerHTML = `<p class="no-games">You haven't created any games yet. Start creating! 🚀</p>`;
 }
 
 // --- 3. LOGOUT ---
@@ -77,12 +61,10 @@ window.switchTab = (tabName) => {
     document.getElementById('view-create').style.display = 'none';
     document.getElementById('view-settings').style.display = 'none';
     document.getElementById('view-chat').style.display = 'none'; 
-
     document.getElementById('nav-home').classList.remove('active');
     document.getElementById('nav-create').classList.remove('active');
     document.getElementById('nav-settings').classList.remove('active');
     document.getElementById('nav-chat').classList.remove('active'); 
-
     document.getElementById('view-' + tabName).style.display = 'flex';
     document.getElementById('nav-' + tabName).classList.add('active');
     window.closePanel();
@@ -93,53 +75,44 @@ window.toggleDarkMode = () => {
     localStorage.setItem('bubbleTheme', isDark ? 'dark' : 'light');
 };
 
-// --- 5. CHAT ROOM LOGIC (Limit to 20) ---
+// --- 5. CHAT ROOM LOGIC (HYBRID BAM TRIGGER) ---
 const chatCollection = collection(db, "global-chat");
+
+// Manual fetch for the UI
+async function refreshChat() {
+    const chatBox = document.getElementById('chat-messages');
+    if (!chatBox) return;
+    const snapshot = await getDocs(query(chatCollection, orderBy("createdAt", "desc"), limitToLast(20)));
+    chatBox.innerHTML = ""; 
+    const docs = snapshot.docs.reverse();
+    docs.forEach((doc) => {
+        const data = doc.data();
+        chatBox.innerHTML += `<div><strong>${data.username}:</strong> ${data.text}</div>`;
+    });
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// Listen ONLY to the tiny trigger document (1 read total for all users)
+onSnapshot(doc(db, "chat-metadata", "status"), () => {
+    refreshChat();
+});
 
 window.sendMessage = async () => {
     const input = document.getElementById('chat-input');
     const text = input.value.trim();
-    if (text === "") return;
+    if (text === "" || text.length > 100) return;
 
-    // 1. Enforce 100 character limit
-    if (text.length > 101) {
-        alert("Text too long! Max 100 characters allowed.");
-        return;
-    }
-
-    // 2. Add the new message
-    await addDoc(chatCollection, {
-        text: text,
-        username: window.currentUsername || "Player",
-        createdAt: serverTimestamp()
-    });
+    // Add message
+    await addDoc(chatCollection, { text, username: window.currentUsername || "Player", createdAt: serverTimestamp() });
     input.value = "";
 
-    // 3. AUTO-CLEANUP (Ensure only 20 messages exist in total)
-    // We fetch them sorted by time, oldest first
-    const cleanupQuery = query(chatCollection, orderBy("createdAt", "asc"));
-    const snapshot = await getDocs(cleanupQuery);
-    
-    // While there are more than 20, keep deleting the oldest one
-    let docsToDelete = snapshot.size - 20;
-    for (let i = 0; i < docsToDelete; i++) {
-        await deleteDoc(snapshot.docs[i].ref);
-    }
+    // Cleanup
+    const snapshot = await getDocs(query(chatCollection, orderBy("createdAt", "asc")));
+    if (snapshot.size > 20) await deleteDoc(snapshot.docs[0].ref);
+
+    // BAM! Trigger the update for everyone else
+    await setDoc(doc(db, "chat-metadata", "status"), { lastUpdated: serverTimestamp() });
 };
-
-// Pull last 20 for display
-const chatQuery = query(chatCollection, orderBy("createdAt", "asc"), limitToLast(20));
-
-onSnapshot(chatQuery, (snapshot) => {
-    const chatBox = document.getElementById('chat-messages');
-    if (!chatBox) return;
-    chatBox.innerHTML = ""; 
-    snapshot.forEach((doc) => {
-        const data = doc.data();
-        chatBox.innerHTML += `<div><strong>${data.username}:</strong> ${data.text}</div>`;
-    });
-    chatBox.scrollTop = chatBox.scrollHeight; 
-});
 
 window.openPanel = (n, i, d) => {
     document.getElementById('panelTitle').innerText = n;
