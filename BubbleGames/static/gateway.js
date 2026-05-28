@@ -41,6 +41,14 @@ window.handleAuth = async () => {
         return;
     }
 
+    // --- STRICT ALPHANUMERIC CHECK (Letters/Numbers only, no spaces) ---
+    const alphaNumericRegex = /^[a-zA-Z0-9]+$/;
+    if (!alphaNumericRegex.test(usernameInput)) {
+        alert("Letters and numbers only! No spaces or special symbols allowed. 🫧");
+        return;
+    }
+    // -------------------------------------------------------------------
+
     loader.style.display = 'block';
     mainButton.style.opacity = '0.5'; 
     mainButton.disabled = true;
