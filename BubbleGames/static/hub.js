@@ -1,6 +1,6 @@
 import { auth, db } from './firebase-config.js';
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { doc, getDoc, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, limitToLast, getDocs, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { doc, getDoc, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, limitToLast, getDocs, deleteDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // --- 0. DARK MODE (LOAD IMMEDIATELY) ---
 if (localStorage.getItem('bubbleTheme') === 'dark') {
@@ -32,6 +32,12 @@ onAuthStateChanged(auth, async (user) => {
         const displayName = await getUsername(user.uid);
         if (welcomeText) welcomeText.innerText = `Welcome back, ${displayName}! ✨`;
         window.currentUsername = displayName;
+        const profileRef = doc(db, "profiles", user.uid);
+const profileSnap = await getDoc(profileRef);
+
+window.currentRank = profileSnap.exists()
+    ? (profileSnap.data().rank || "user")
+    : "user";
         
         loadGlobalGames();
         loadUserGames(); 
@@ -81,9 +87,27 @@ async function refreshChat() {
     const q = query(chatCollection, orderBy("createdAt", "asc"), limitToLast(20));
     const snapshot = await getDocs(q);
     chatBox.innerHTML = ""; 
-    snapshot.forEach((doc) => {
-        const data = doc.data();
-        chatBox.innerHTML += `<div><strong>${data.username}:</strong> ${data.text}</div>`;
+    snapshot.forEach((messageDoc) => {
+    const data = messageDoc.data();
+       const canModerate =
+    window.currentRank === "Owner" ||
+    window.currentRank === "Moderator";
+
+chatBox.innerHTML += `
+<div>
+    <strong>${data.username}:</strong> 
+    <span id="msg-${messageDoc.id}">${String(data.text).replace(/</g, "&lt;").replace(/>/g, "&gt;")}</span>
+
+    ${
+        canModerate
+        ? `
+        <button onclick="editMessage('${messageDoc.id}')">✏️</button>
+        <button onclick="deleteMessageNow('${messageDoc.id}')">🗑️</button>
+        `
+        : ""
+    }
+</div>
+`;
     });
     chatBox.scrollTop = chatBox.scrollHeight;
 }
@@ -96,7 +120,13 @@ window.sendMessage = async () => {
     const text = input.value.trim();
     if (text === "" || text.length > 100) return;
 
-    await addDoc(chatCollection, { text, username: window.currentUsername || "Player", createdAt: serverTimestamp() });
+    await addDoc(chatCollection, { 
+    text, 
+    username: window.currentUsername || "Player",
+    uid: auth.currentUser.uid,
+    rank: window.currentRank || "user",
+    createdAt: serverTimestamp()
+});
     input.value = "";
 
     const snapshot = await getDocs(query(chatCollection, orderBy("createdAt", "asc")));
@@ -115,4 +145,39 @@ window.openPanel = (n, i, d) => {
 window.closePanel = () => {
     const panel = document.getElementById('actionPanel');
     if (panel) panel.classList.remove('open');
+};
+
+// --- 6. MODERATION TOOLS ---
+
+window.deleteMessageNow = async (messageId) => {
+
+    if (
+        window.currentRank !== "Owner" &&
+        window.currentRank !== "Moderator"
+    ) return;
+
+    await deleteDoc(doc(db, "global-chat", messageId));
+
+    await setDoc(doc(db, "chat-metadata", "status"), {
+        lastUpdated: serverTimestamp()
+    });
+};
+
+window.editMessage = async (messageId) => {
+    if (
+    window.currentRank !== "Owner" &&
+    window.currentRank !== "Moderator"
+) return;
+    const newText = prompt("Edit this message:");
+    if (!newText || newText.trim() === "" || newText.trim().length > 100) return;
+
+    
+
+    await updateDoc(doc(db, "global-chat", messageId), {
+        text: newText.trim()
+    });
+
+    await setDoc(doc(db, "chat-metadata", "status"), {
+        lastUpdated: serverTimestamp()
+    });
 };
