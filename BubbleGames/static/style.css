@@ -146,8 +146,15 @@ h1 span {
     overflow: hidden;
 }
 
-/* The shine effect */
-.go-btn::before {
+/* Update your existing .go-btn to remove the animation properties if you want the login button plain */
+/* Just add this specific block for the Hub button at the very bottom of your CSS: */
+
+.hub-new-game-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.hub-new-game-btn::before {
     content: '';
     position: absolute;
     top: -50%;
@@ -163,11 +170,6 @@ h1 span {
     0% { left: -150%; }
     20% { left: 150%; }
     100% { left: 150%; }
-}
-
-.go-btn:active {
-    transform: translateY(6px);
-    box-shadow: 0 4px 0 #d946ef;
 }
 /* 8. SIGN UP FOOTER */
 .footer-links {
