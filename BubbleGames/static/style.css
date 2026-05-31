@@ -141,13 +141,34 @@ h1 span {
     cursor: pointer;
     box-shadow: 0 10px 0 #d946ef; 
     transition: 0.1s;
+    /* Added to keep the shine inside the button */
+    position: relative;
+    overflow: hidden;
+}
+
+/* The shine effect */
+.go-btn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -150%;
+    width: 50%;
+    height: 200%;
+    background: rgba(255, 255, 255, 0.4);
+    transform: rotate(30deg);
+    animation: shine-animation 3s infinite;
+}
+
+@keyframes shine-animation {
+    0% { left: -150%; }
+    20% { left: 150%; }
+    100% { left: 150%; }
 }
 
 .go-btn:active {
     transform: translateY(6px);
     box-shadow: 0 4px 0 #d946ef;
 }
-
 /* 8. SIGN UP FOOTER */
 .footer-links {
     margin-top: 35px;
