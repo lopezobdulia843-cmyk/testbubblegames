@@ -14,12 +14,12 @@
             user-select: none;
         }
 
-       /* UI Toolbar Container */
+        /* UI Toolbar Container */
         #ui {
             position: absolute;
             top: 20px;
-            left: 20px; /* Changed from 50% */
-            /* Removed transform: translateX(-50%) */
+            left: 50%;
+            transform: translateX(-50%);
             background: rgba(255, 255, 255, 0.85);
             padding: 10px 20px;
             border-radius: 30px;
@@ -225,11 +225,8 @@ BlockColor:
     </div>
 </div><body>
 
-    <div style="position: absolute; top: 20px; left: 150px; background: rgba(255, 255, 255, 0.9); padding: 10px 20px; border-radius: 20px; border: 2px solid #ccc; font-weight: bold; z-index: 100;">
-        🏠 Hub
-    </div>
     <div id="ui">        
-        
+        <button class="btn" onclick="window.location.href='hub.html'">🏠 Hub</button>
         <button id="buildBtn" class="btn active">Build</button>
         <button id="moveBtn" class="btn">Move</button>
 
